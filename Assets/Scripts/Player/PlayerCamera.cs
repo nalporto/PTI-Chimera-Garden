@@ -21,7 +21,7 @@ public class PlayerCamera : MonoBehaviour
         if (weapon != null)
         {
             weapon.position = transform.position + transform.TransformDirection(weaponOffset);
-            weapon.rotation = Quaternion.Euler(-90f, 90f, 90f);
+            weapon.rotation = transform.rotation * Quaternion.Euler(0,0,0);
         }
     }
 
@@ -36,7 +36,7 @@ public class PlayerCamera : MonoBehaviour
         // Ensure weapon is rotated at play
         if (weapon != null)
         {
-            weapon.rotation = Quaternion.Euler(-90f, 90f, 90f);
+            weapon.rotation = transform.rotation * Quaternion.Euler(0,0,0);
         }
     }
 
@@ -47,7 +47,7 @@ public class PlayerCamera : MonoBehaviour
         if (weapon != null)
         {
             weapon.position = transform.position + transform.TransformDirection(weaponOffset);
-            weapon.rotation = transform.rotation * Quaternion.Euler(-90f, 0f, 0f);
+            weapon.rotation = transform.rotation;
         }
     }
 
@@ -57,7 +57,7 @@ public class PlayerCamera : MonoBehaviour
         if (weapon != null)
         {
             weapon.position = transform.position + transform.TransformDirection(weaponOffset);
-            weapon.rotation = transform.rotation * Quaternion.Euler(90f, 0f, 0f);
+            weapon.rotation = transform.rotation;
         }
     }
 
