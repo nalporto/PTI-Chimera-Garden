@@ -103,7 +103,6 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
     private Vector3 grapplePoint;
     private Vector3 grappleStartPosition;
     private Vector3 grappleDirection;
-    private bool grappleArrived = false;
     private float lastDashTime = -10f;
     private bool isDashing = false;
     private Vector3 dashVelocity;
@@ -120,7 +119,7 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
     // Add at the top with other fields:
     [SerializeField] private LineRenderer grappleLine;
     [SerializeField] private Transform firePoint;
-    
+
 
     public void Initialize()
     {
@@ -140,8 +139,8 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
         _requestedMovement = input.Rotation * _requestedMovement;
         var wasRequestingJump = _requestedJump;
         _requestedJump = _requestedJump || input.Jump;
-        if(_requestedJump && !wasRequestingJump)      
-           _timeSinceJumpRequest = 0f;       
+        if (_requestedJump && !wasRequestingJump)
+            _timeSinceJumpRequest = 0f;
         _requestedSustainedJump = input.JumpSustain;
         var wasRequestingCrouch = _requestedCrouch;
         _requestedCrouch = input.Crouch switch
@@ -150,11 +149,11 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
             CrouchInput.None => _requestedCrouch,
             _ => _requestedCrouch
         };
-        if(_requestedCrouch && !wasRequestingCrouch)
+        if (_requestedCrouch && !wasRequestingCrouch)
         {
             _requestedCrouchInAir = !_state.Grounded;
         }
-        else if(!_requestedCrouch && wasRequestingCrouch)
+        else if (!_requestedCrouch && wasRequestingCrouch)
         {
             _requestedCrouchInAir = false;
         }
@@ -188,25 +187,25 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
         var currentHeight = motor.Capsule.height;
         var normalizedHeight = currentHeight / standHeight;
 
-        var cameraTargetHeight = currentHeight * 
+        var cameraTargetHeight = currentHeight *
         (
         _state.Stance is Stance.Stand
-        
+
             ? standCameraTargetHeight
             : crouchCameraTargetHeight
         );
         var rootTargetScale = new Vector3(1f, normalizedHeight, 1f);
-        
+
         cameraTarget.localPosition = Vector3.Lerp
         (
-            a:cameraTarget.localPosition,
-            b:new Vector3(0f, cameraTargetHeight, 0f),
-            t:1f - Mathf.Exp(-crouchHeightResponse * deltaTime)
+            a: cameraTarget.localPosition,
+            b: new Vector3(0f, cameraTargetHeight, 0f),
+            t: 1f - Mathf.Exp(-crouchHeightResponse * deltaTime)
         );
         root.localScale = Vector3.Lerp
         (
-            a:root.localScale,
-            b:rootTargetScale,
+            a: root.localScale,
+            b: rootTargetScale,
             t: 1f - Mathf.Exp(-crouchHeightResponse * deltaTime)
         );
     }
@@ -243,7 +242,6 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
             if (distance < 2f)
             {
                 isGrappling = false;
-                grappleArrived = true;
                 if (grappleLine != null)
                     grappleLine.enabled = false;
 
@@ -273,16 +271,16 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
                 surfaceNormal: motor.GroundingStatus.GroundNormal
                 ) * _requestedMovement.magnitude;
 
-                {
+            {
                 var moving = groundedMovement.sqrMagnitude > 0f;
                 var crouching = _state.Stance is Stance.Crouch;
                 var wasStanding = _laststate.Stance is Stance.Stand;
                 var wasInAir = !_laststate.Grounded;
-                if(moving && crouching && wasStanding || wasInAir)
+                if (moving && crouching && wasStanding || wasInAir)
                 {
                     _state.Stance = Stance.Slide;
 
-                    if(wasInAir)
+                    if (wasInAir)
                     {
 
                         float airSpeedForSlide = _laststate.Velocity.magnitude;
@@ -311,12 +309,12 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
                     }
                 }
 
-                }
-            
+            }
+
             if (_state.Stance is Stance.Stand or Stance.Crouch)
-            
-            {                
-                var speed = _state.Stance is Stance.Stand     
+
+            {
+                var speed = _state.Stance is Stance.Stand
                     ? walkSpeed
                     : crouchSpeed;
                 var response = _state.Stance is Stance.Stand
@@ -324,12 +322,12 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
                     : crouchResponse;
 
                 var targetVelocity = groundedMovement * speed;
-               var moveVelocity = Vector3.Lerp
-                (
-                    a: currentVelocity,
-                    b: targetVelocity,
-                    t: 1f - Mathf.Exp(-response * deltaTime)
-                );
+                var moveVelocity = Vector3.Lerp
+                 (
+                     a: currentVelocity,
+                     b: targetVelocity,
+                     t: 1f - Mathf.Exp(-response * deltaTime)
+                 );
                 _state.Acceleration = moveVelocity - currentVelocity;
                 currentVelocity = moveVelocity;
             }
@@ -361,10 +359,10 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
                     currentVelocity = steerVelocity;
                 }
 
-                if(currentVelocity.magnitude < slideEndSpeed)
+                if (currentVelocity.magnitude < slideEndSpeed)
                     _state.Stance = Stance.Crouch;
             }
-        
+
         }
         else
         {
@@ -372,13 +370,13 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
 
             if (_requestedMovement.sqrMagnitude > 0f)
             {
-                
+
                 var planarMovement = Vector3.ProjectOnPlane
                 (
                     vector: _requestedMovement,
                     planeNormal: motor.CharacterUp
                 ) * _requestedMovement.magnitude;
-                
+
 
                 var currentPlanarVelocity = Vector3.ProjectOnPlane
                 (
@@ -410,7 +408,7 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
 
                 if (motor.GroundingStatus.FoundAnyGround)
                 {
-                    if(Vector3.Dot(movementForce, currentVelocity + movementForce)> 0f)
+                    if (Vector3.Dot(movementForce, currentVelocity + movementForce) > 0f)
                     {
                         var obstructionNormal = Vector3.Cross
                         (
@@ -420,9 +418,9 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
                                 motor.CharacterUp,
                                 motor.GroundingStatus.GroundNormal
                             )
-                        ).normalized;    
+                        ).normalized;
 
-                        movementForce = Vector3.ProjectOnPlane(movementForce, obstructionNormal);                   
+                        movementForce = Vector3.ProjectOnPlane(movementForce, obstructionNormal);
                     }
                 }
 
@@ -437,7 +435,7 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
             {
                 var effectiveGravity = gravity;
                 var verticalSpeed = Vector3.Dot(currentVelocity, motor.CharacterUp);
-                if (_requestedSustainedJump && verticalSpeed > 0f) 
+                if (_requestedSustainedJump && verticalSpeed > 0f)
                 {
                     effectiveGravity *= jumpSustainGravity;
                 }
@@ -502,7 +500,7 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
                 var canJumpLater = _timeSinceJumpRequest < coyoteTime;
                 _requestedJump = canJumpLater;
             }
-            
+
         }
 
         if (isDashing)
@@ -543,7 +541,7 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
                 yOffset: crouchHeight * 0.5f
             );
         }
-            
+
     }
 
     public void AfterCharacterUpdate(float deltaTime)
@@ -585,11 +583,11 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
 
     public void PostGroundingUpdate(float deltaTime)
     {
-        if(!motor.GroundingStatus.IsStableOnGround && _state.Stance is Stance.Slide)
+        if (!motor.GroundingStatus.IsStableOnGround && _state.Stance is Stance.Slide)
         {
             _state.Stance = Stance.Crouch;
         }
-        
+
     }
 
     public bool IsColliderValidForCollisions(Collider coll) => true;
@@ -614,7 +612,7 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
     {
         return cameraTarget;
     }
-    
+
     public CharacterState GetState() => _state;
     public CharacterState GetLastState() => _laststate;
 
@@ -668,7 +666,6 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
                 grappleOriginPosition = transform.position; // Store where grapple started
                 grappleDirection = (grapplePoint - transform.position).normalized;
                 isGrappling = true;
-                grappleArrived = false;
 
                 // Enable and set up the grapple line
                 if (grappleLine != null)
@@ -686,7 +683,6 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
     public void CancelGrapple()
     {
         isGrappling = false;
-        grappleArrived = false;
         if (grappleLine != null)
             grappleLine.enabled = false;
     }
@@ -709,4 +705,5 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
     {
         return dashCharges;
     }
+
 }

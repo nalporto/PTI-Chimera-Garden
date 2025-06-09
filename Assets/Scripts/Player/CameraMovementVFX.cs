@@ -4,13 +4,18 @@ public class CameraMovementLines : MonoBehaviour
 {
     [SerializeField] private ParticleSystem movementLines;
     [SerializeField] private Transform player;
+    [SerializeField] private Transform cameraTransform;
+    [SerializeField] private float distanceInFront = 1.5f;
+
     private Vector3 lastPosition;
 
     void Start()
     {
         if (player == null)
-            player = transform; // fallback
+            player = transform;
         lastPosition = player.position;
+        if (cameraTransform == null)
+            cameraTransform = Camera.main.transform;
     }
 
     void Update()
@@ -18,15 +23,21 @@ public class CameraMovementLines : MonoBehaviour
         float speed = (player.position - lastPosition).magnitude / Time.deltaTime;
         lastPosition = player.position;
 
-        if (speed > 1f) // Only show lines if moving fast enough
+        if (movementLines != null && cameraTransform != null)
         {
-            if (!movementLines.isEmitting)
-                movementLines.Play();
-        }
-        else
-        {
-            if (movementLines.isEmitting)
-                movementLines.Stop();
+            movementLines.transform.position = cameraTransform.position + cameraTransform.forward * distanceInFront;
+            movementLines.transform.rotation = cameraTransform.rotation;
+
+            if (speed > 25f)
+            {
+                if (!movementLines.isEmitting)
+                    movementLines.Play();
+            }
+            else
+            {
+                if (movementLines.isEmitting)
+                    movementLines.Stop();
+            }
         }
     }
 }

@@ -70,6 +70,12 @@ public class Player : MonoBehaviour
             var direction = cam.transform.forward;
             playerCharacter.TryStartGrapple(origin, direction);
         }
+
+        // --- CANCEL GRAPPLE ON RIGHT MOUSE BUTTON UP ---
+        if (Input.GetMouseButtonUp(1))
+        {
+            playerCharacter.CancelGrapple();
+        }
     }
 
     void LateUpdate()
