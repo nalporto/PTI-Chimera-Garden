@@ -28,7 +28,7 @@ public class CameraMovementLines : MonoBehaviour
             movementLines.transform.position = cameraTransform.position + cameraTransform.forward * distanceInFront;
             movementLines.transform.rotation = cameraTransform.rotation;
 
-            if (speed > 25f)
+            if (speed > 31f)
             {
                 if (!movementLines.isEmitting)
                     movementLines.Play();
