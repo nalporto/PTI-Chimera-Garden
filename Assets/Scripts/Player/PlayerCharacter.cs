@@ -78,9 +78,9 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
     private float dashRechargeTimer = 0f;
     private float dashCooldownTimer = 0f;
 
-    [SerializeField] private float grapplePullSpeed = 60f;
+    [SerializeField] private float grapplePullSpeed = 50f;
     [SerializeField] private float grappleLowGravity = -1.5f;
-    [SerializeField] private float grapplePropelForce = 8f;
+    [SerializeField] private float grapplePropelForce = 4.8f;
     [SerializeField] private float maxGrappleDistance = 40f;
 
     private CharacterState _state;
