@@ -9,6 +9,7 @@ public class Shooter : MonoBehaviour
     [SerializeField] private int maxAmmo = 12;
     [SerializeField] private float reloadTime = 1.5f;
     [SerializeField] private float fireRate = 0.3f; // Seconds between shots
+    [SerializeField] private float damage = 1f; // Damage per shot
 
     private int currentAmmo;
     private bool isReloading = false;
@@ -16,15 +17,11 @@ public class Shooter : MonoBehaviour
 
     public int CurrentAmmo => currentAmmo;
     public int MagSize => maxAmmo;
-
-    public enum WeaponType
-    {
-        Pistol,
-        Shotgun
-    }
+    public bool IsReloading => isReloading;
+    public float Damage => damage;
 
     [Header("Weapon Type")]
-    [SerializeField] private WeaponType weaponType = WeaponType.Pistol; // This ensures pistol is default
+    [SerializeField] private string weaponType = "PISTOL"; // Use a string or int for type
 
     [Header("Shotgun Settings")]
     [SerializeField] private int pelletsPerShot = 6;
@@ -32,7 +29,7 @@ public class Shooter : MonoBehaviour
 
     void Start()
     {
-        weaponType = WeaponType.Pistol; // Force pistol as default at runtime
+        weaponType = "PISTOL"; // Force pistol as default at runtime
 
         currentAmmo = maxAmmo;
         // Set initial weapon model
@@ -48,13 +45,13 @@ public class Shooter : MonoBehaviour
         // --- Weapon switching ---
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            weaponType = WeaponType.Pistol;
+            weaponType = "PISTOL";
             // if (pistolModel != null) pistolModel.SetActive(true);
             // if (shotgunModel != null) shotgunModel.SetActive(false);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            weaponType = WeaponType.Shotgun;
+            weaponType = "SHOTGUN";
             // if (pistolModel != null) pistolModel.SetActive(false);
             // if (shotgunModel != null) shotgunModel.SetActive(true);
         }
@@ -91,11 +88,11 @@ public class Shooter : MonoBehaviour
 
         currentAmmo--;
 
-        if (weaponType == WeaponType.Pistol)
+        if (weaponType == "PISTOL")
         {
             FireBullet(playerCamera.transform.forward);
         }
-        else if (weaponType == WeaponType.Shotgun)
+        else if (weaponType == "SHOTGUN")
         {
             for (int i = 0; i < pelletsPerShot; i++)
             {
@@ -141,7 +138,7 @@ public class Shooter : MonoBehaviour
             EnemyAiTutorial enemyAI = hit.collider.GetComponent<EnemyAiTutorial>();
             if (enemyAI != null)
             {
-                enemyAI.TakeDamage(1); // Each pellet does 1 damage
+                enemyAI.TakeDamage(damage); // Use the variable damage
             }
         }
         else

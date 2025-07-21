@@ -13,6 +13,8 @@ public class PlayerCamera : MonoBehaviour
     private Vector3 _eulerAngles;
     [SerializeField] private Camera mainCamera; // Drag your Camera here in the Inspector
     private float _currentFov;
+    [SerializeField] private float minPitch = -90f; // Look down limit
+    [SerializeField] private float maxPitch = 90f;  // Look up limit
 
     public void Initialize(Transform target)
     {
@@ -43,6 +45,8 @@ public class PlayerCamera : MonoBehaviour
     public void UpdateRotation(CameraInput input)
     {
         _eulerAngles += new Vector3(-input.Look.y, input.Look.x) * sensitivity;
+        // Clamp the pitch (X axis)
+        _eulerAngles.x = Mathf.Clamp(_eulerAngles.x, minPitch, maxPitch);
         transform.eulerAngles = _eulerAngles;
         if (weapon != null)
         {

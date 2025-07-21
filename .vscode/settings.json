@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "kinematic.sln"
+    "dotnet.defaultSolution": "PTI-Chimera-Garden.sln"
 }
