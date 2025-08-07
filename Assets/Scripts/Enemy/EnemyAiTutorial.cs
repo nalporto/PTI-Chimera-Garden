@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
-using System.Collections; // Add this for coroutine support
+using System.Collections;
 
 public class EnemyAiTutorial : MonoBehaviour
 {
@@ -8,7 +8,8 @@ public class EnemyAiTutorial : MonoBehaviour
     public NavMeshAgent agent;
     public Transform player;
     public GameObject projectilePrefab;
-    public Transform firePoint;
+    public Transform firePoint;           // Main fire point
+    public Transform firePointSecondary;  // Optional secondary fire point for dual wielding
 
     [Header("Patrol")]
     public LayerMask whatIsGround;
@@ -24,12 +25,13 @@ public class EnemyAiTutorial : MonoBehaviour
     [Header("Attack")]
     public float timeBetweenAttacks = 2f;
     private bool alreadyAttacked = false;
+    private bool usePrimaryFirePoint = true; // Track which fire point to use next
 
     [Header("Enemy Stats")]
     public float health = 5f;
     public int damage = 1;
 
-    private Renderer[] renderers; // Store all renderers for color change
+    private Renderer[] renderers;
     private Color[] originalColors;
 
     private void Awake()
@@ -44,7 +46,6 @@ public class EnemyAiTutorial : MonoBehaviour
                 Debug.LogError("Player not found! Make sure your player GameObject is tagged 'Player'.");
         }
 
-        // Cache all renderers and their original colors
         renderers = GetComponentsInChildren<Renderer>();
         originalColors = new Color[renderers.Length];
         for (int i = 0; i < renderers.Length; i++)
@@ -58,7 +59,6 @@ public class EnemyAiTutorial : MonoBehaviour
 
     private void Update()
     {
-        // Detection
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
 
@@ -98,7 +98,6 @@ public class EnemyAiTutorial : MonoBehaviour
         {
             agent.SetDestination(player.position);
 
-            // Always face the player
             Vector3 lookDir = (player.position - transform.position).normalized;
             lookDir.y = 0;
             if (lookDir != Vector3.zero)
@@ -112,7 +111,6 @@ public class EnemyAiTutorial : MonoBehaviour
 
         if (player != null)
         {
-            // Always face the player
             Vector3 lookDir = (player.position - transform.position).normalized;
             lookDir.y = 0;
             if (lookDir != Vector3.zero)
@@ -121,12 +119,18 @@ public class EnemyAiTutorial : MonoBehaviour
 
         if (!alreadyAttacked && player != null)
         {
-            // Calculate direction to player
-            Vector3 targetPos = player.position + Vector3.up * 1.0f; // Aim at player's chest/head
-            Vector3 dir = (targetPos - firePoint.position).normalized;
+            // Alternate between fire points if both are assigned
+            Transform chosenFirePoint = firePoint;
+            if (firePointSecondary != null)
+            {
+                chosenFirePoint = usePrimaryFirePoint ? firePoint : firePointSecondary;
+                usePrimaryFirePoint = !usePrimaryFirePoint;
+            }
 
-            // Instantiate at firePoint
-            Instantiate(projectilePrefab, firePoint.position, Quaternion.LookRotation(dir));
+            Vector3 targetPos = player.position + Vector3.up * 1.0f;
+            Vector3 dir = (targetPos - chosenFirePoint.position).normalized;
+
+            Instantiate(projectilePrefab, chosenFirePoint.position, Quaternion.LookRotation(dir));
 
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
@@ -146,19 +150,17 @@ public class EnemyAiTutorial : MonoBehaviour
         StartCoroutine(HitFlash());
 
         if (health <= 0)
-            DestroyEnemy(); // Instantly destroy enemy
+            DestroyEnemy();
     }
 
     private IEnumerator HitFlash()
     {
-        // Set all materials to white
         for (int i = 0; i < renderers.Length; i++)
         {
             if (renderers[i].material.HasProperty("_Color"))
                 renderers[i].material.color = Color.white;
         }
         yield return new WaitForSeconds(0.1f);
-        // Restore original colors
         for (int i = 0; i < renderers.Length; i++)
         {
             if (renderers[i].material.HasProperty("_Color"))

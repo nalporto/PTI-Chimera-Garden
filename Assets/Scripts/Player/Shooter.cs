@@ -11,6 +11,16 @@ public class Shooter : MonoBehaviour
     [SerializeField] private float fireRate = 0.3f; // Seconds between shots
     [SerializeField] private float damage = 1f; // Damage per shot
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip shootSFX;
+    [SerializeField] private AudioClip reloadSFX;
+    [SerializeField] private AudioSource audioSource;
+
+    [Header("Animation")]
+    [SerializeField] private Animator weaponAnimator;
+    [SerializeField] private string shootAnimTrigger = "Shoot";
+    [SerializeField] private string reloadAnimTrigger = "Reload";
+
     private int currentAmmo;
     private bool isReloading = false;
     private float nextFireTime = 0f;
@@ -30,11 +40,11 @@ public class Shooter : MonoBehaviour
     void Start()
     {
         weaponType = "PISTOL"; // Force pistol as default at runtime
-
         currentAmmo = maxAmmo;
-        // Set initial weapon model
-        // if (pistolModel != null) pistolModel.SetActive(true);
-        // if (shotgunModel != null) shotgunModel.SetActive(false);
+
+        // Try to get AudioSource if not assigned
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -46,14 +56,20 @@ public class Shooter : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             weaponType = "PISTOL";
-            // if (pistolModel != null) pistolModel.SetActive(true);
-            // if (shotgunModel != null) shotgunModel.SetActive(false);
+            if (weaponAnimator != null)
+            {
+                weaponAnimator.ResetTrigger(shootAnimTrigger);
+                weaponAnimator.ResetTrigger(reloadAnimTrigger);
+            }
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             weaponType = "SHOTGUN";
-            // if (pistolModel != null) pistolModel.SetActive(false);
-            // if (shotgunModel != null) shotgunModel.SetActive(true);
+            if (weaponAnimator != null)
+            {
+                weaponAnimator.ResetTrigger(shootAnimTrigger);
+                weaponAnimator.ResetTrigger(reloadAnimTrigger);
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.R) && currentAmmo < maxAmmo)
@@ -72,7 +88,15 @@ public class Shooter : MonoBehaviour
     System.Collections.IEnumerator Reload()
     {
         isReloading = true;
-        // Optionally: play reload animation or sound here
+
+        // Play reload animation if assigned
+        if (weaponAnimator != null && !string.IsNullOrEmpty(reloadAnimTrigger))
+            weaponAnimator.SetTrigger(reloadAnimTrigger);
+
+        // Play reload SFX if assigned
+        if (reloadSFX != null && audioSource != null)
+            audioSource.PlayOneShot(reloadSFX);
+
         yield return new WaitForSeconds(reloadTime);
         currentAmmo = maxAmmo;
         isReloading = false;
@@ -87,6 +111,14 @@ public class Shooter : MonoBehaviour
         }
 
         currentAmmo--;
+
+        // Play shoot animation if assigned
+        if (weaponAnimator != null && !string.IsNullOrEmpty(shootAnimTrigger))
+            weaponAnimator.SetTrigger(shootAnimTrigger);
+
+        // Play shoot SFX if assigned
+        if (shootSFX != null && audioSource != null)
+            audioSource.PlayOneShot(shootSFX);
 
         if (weaponType == "PISTOL")
         {
@@ -114,7 +146,6 @@ public class Shooter : MonoBehaviour
         Vector3 origin = playerCamera.transform.position;
         RaycastHit hit;
 
-        // --- Aim Assist removed: just do a normal raycast ---
         Ray ray = new Ray(origin, direction);
         if (Physics.Raycast(ray, out hit, 100f))
         {
