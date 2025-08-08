@@ -57,6 +57,24 @@ public class EnemyAiTutorial : MonoBehaviour
         }
     }
 
+    // Add this to Awake() or Start()
+    void Start()
+    {
+        if (!agent.isOnNavMesh)
+        {
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(transform.position, out hit, 10f, NavMesh.AllAreas))
+            {
+                agent.Warp(hit.position);
+                Debug.Log($"{gameObject.name} warped to NavMesh at {hit.position}");
+            }
+            else
+            {
+                Debug.LogWarning($"{gameObject.name} could not find NavMesh nearby!");
+            }
+        }
+    }
+
     private void Update()
     {
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);

@@ -114,8 +114,8 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
     private float dashFovTimer = 0f;
     // ...existing fields...
     private float jumpCooldownTimer = 0.2f;
+    private float doubleJumpCooldownTimer = 0f;
 
-    // Add this field to store the original position before grappling:
     private Vector3 grappleOriginPosition;
 
     // Add at the top with other fields:
@@ -441,9 +441,18 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
             var grounded = motor.GroundingStatus.IsStableOnGround;
             var canCoyoteJump = _timeSinceUngrounded < coyoteTime && !_ungroundedDueToJump;
 
-            // Only allow jump if cooldown is over and jumps remain
-            if ((grounded || canCoyoteJump || jumpsRemaining > 0) && jumpsRemaining > 0 && jumpCooldownTimer <= 0f)
+            // Only allow jump if jumps remain
+            if ((grounded || canCoyoteJump || jumpsRemaining > 0) && jumpsRemaining > 0)
             {
+                // If in air and this is the double jump, check cooldown
+                bool isDoubleJump = !grounded && !canCoyoteJump && jumpsRemaining == 1;
+                if (isDoubleJump && doubleJumpCooldownTimer > 0f)
+                {
+                    // Double jump is on cooldown, do not allow
+                    _requestedJump = false;
+                    return;
+                }
+
                 _requestedJump = false;
                 _requestedCrouch = false;
                 _requestedCrouchInAir = false;
@@ -472,10 +481,10 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
 
                 jumpsRemaining--;
 
-                // Start jump cooldown ONLY if this was the double jump (jumpsRemaining == 0 after decrement)
-                if (!grounded && !canCoyoteJump && jumpsRemaining == 0)
+                // If this was a double jump, start cooldown
+                if (isDoubleJump)
                 {
-                    jumpCooldownTimer = 1.5f;
+                    doubleJumpCooldownTimer = 5f; // or your desired cooldown
                 }
 
                 // Play jump SFX
