@@ -108,13 +108,13 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
     private Vector3 dashVelocity;
     private float dashDuration = 0.15f;
     private float dashTimer = 0f;
+    private float jumpLockoutTimer = 0f;
     private float dashAirtimeTimer = 0f;
     private const float dashAirtimeDuration = 0.4f;
     private int jumpsRemaining;
     private float dashFovTimer = 0f;
     // ...existing fields...
     private float jumpCooldownTimer = 0.2f;
-    private float doubleJumpCooldownTimer = 0f;
 
     private Vector3 grappleOriginPosition;
 
@@ -122,11 +122,6 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
     [SerializeField] private LineRenderer grappleLine;
     [SerializeField] private Transform firePoint;
 
-
-    [Header("SFX")]
-    [SerializeField] private AudioClip jumpSFX;
-    [SerializeField] private AudioClip slideSFX;
-    [SerializeField] private AudioSource audioSource;
 
     public void Initialize()
     {
@@ -302,10 +297,6 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
                             surfaceNormal: motor.GroundingStatus.GroundNormal
                         ) * slideSpeed;
                     }
-
-                    // Play slide SFX
-                    if (slideSFX != null && audioSource != null)
-                        audioSource.PlayOneShot(slideSFX);
                 }
             }
 
@@ -438,21 +429,18 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
 
         if (_requestedJump)
         {
+            // Block jump if lockout timer is active
+            if (jumpLockoutTimer > 0f)
+            {
+                _requestedJump = false;
+                return;
+            }
             var grounded = motor.GroundingStatus.IsStableOnGround;
             var canCoyoteJump = _timeSinceUngrounded < coyoteTime && !_ungroundedDueToJump;
 
             // Only allow jump if jumps remain
             if ((grounded || canCoyoteJump || jumpsRemaining > 0) && jumpsRemaining > 0)
             {
-                // If in air and this is the double jump, check cooldown
-                bool isDoubleJump = !grounded && !canCoyoteJump && jumpsRemaining == 1;
-                if (isDoubleJump && doubleJumpCooldownTimer > 0f)
-                {
-                    // Double jump is on cooldown, do not allow
-                    _requestedJump = false;
-                    return;
-                }
-
                 _requestedJump = false;
                 _requestedCrouch = false;
                 _requestedCrouchInAir = false;
@@ -480,16 +468,6 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
                 currentVelocity += motor.CharacterUp * (targetVerticalSpeed - currentVerticalSpeed);
 
                 jumpsRemaining--;
-
-                // If this was a double jump, start cooldown
-                if (isDoubleJump)
-                {
-                    doubleJumpCooldownTimer = 5f; // or your desired cooldown
-                }
-
-                // Play jump SFX
-                if (jumpSFX != null && audioSource != null)
-                    audioSource.PlayOneShot(jumpSFX);
             }
             else
             {
@@ -570,11 +548,33 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
             {
                 _state.Stance = Stance.Stand;
             }
-
         }
+
+        bool justLanded = !_laststate.Grounded && motor.GroundingStatus.IsStableOnGround;
         _state.Grounded = motor.GroundingStatus.IsStableOnGround;
         _state.Velocity = motor.Velocity;
         _laststate = _tempstate;
+
+        // --- Fix: Project velocity onto ground and dampen horizontal movement after landing ---
+        if (justLanded)
+        {
+            // Project velocity onto ground plane
+            Vector3 groundNormal = motor.GroundingStatus.GroundNormal;
+            Vector3 velocityOnGround = Vector3.ProjectOnPlane(_state.Velocity, groundNormal);
+
+            velocityOnGround *= 0.5f;
+
+            float verticalVelocity = Vector3.Dot(_state.Velocity, groundNormal);
+            _state.Velocity = velocityOnGround + groundNormal * verticalVelocity;
+
+            motor.BaseVelocity = _state.Velocity;
+
+            // Start jump lockout
+            jumpLockoutTimer = 0.24f;
+        }
+
+        if (jumpLockoutTimer > 0f)
+            jumpLockoutTimer -= deltaTime;
     }
 
     public void PostGroundingUpdate(float deltaTime)
