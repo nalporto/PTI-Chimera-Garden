@@ -484,7 +484,7 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
                 // If this was a double jump, start cooldown
                 if (isDoubleJump)
                 {
-                    doubleJumpCooldownTimer = 5f; // or your desired cooldown
+                    doubleJumpCooldownTimer = 1.5f; // or your desired cooldown
                 }
 
                 // Play jump SFX
