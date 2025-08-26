@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class Shooter : MonoBehaviour
 {
@@ -36,6 +37,9 @@ public class Shooter : MonoBehaviour
     [Header("Shotgun Settings")]
     [SerializeField] private int pelletsPerShot = 6;
     [SerializeField] private float spreadAngle = 8f;
+
+    [SerializeField] private TrailRenderer bulletTrailPrefab;
+    [SerializeField] private ParticleSystem impactParticleSystem;
 
     void Start()
     {
@@ -145,8 +149,8 @@ public class Shooter : MonoBehaviour
     {
         Vector3 origin = playerCamera.transform.position;
         RaycastHit hit;
-
         Ray ray = new Ray(origin, direction);
+
         if (Physics.Raycast(ray, out hit, 100f))
         {
             Debug.DrawLine(ray.origin, hit.point, Color.yellow, 1f);
@@ -165,11 +169,18 @@ public class Shooter : MonoBehaviour
                 Destroy(hitFx.gameObject, hitFx.main.duration);
             }
 
+            // Spawn bullet trail
+            if (bulletTrailPrefab != null)
+            {
+                TrailRenderer trail = Instantiate(bulletTrailPrefab, firePoint.position, Quaternion.identity);
+                StartCoroutine(SpawnTrail(trail, hit));
+            }
+
             // Damage EnemyAiTutorial if hit
             EnemyAiTutorial enemyAI = hit.collider.GetComponent<EnemyAiTutorial>();
             if (enemyAI != null)
             {
-                enemyAI.TakeDamage(damage); // Use the variable damage
+                enemyAI.TakeDamage(damage);
             }
         }
         else
@@ -180,6 +191,31 @@ public class Shooter : MonoBehaviour
                 fire.Play();
                 Destroy(fire.gameObject, fire.main.duration);
             }
+
+            // Spawn bullet trail to max distance
+            if (bulletTrailPrefab != null)
+            {
+                Vector3 endPoint = ray.origin + ray.direction * 100f;
+                RaycastHit fakeHit = new RaycastHit { point = endPoint, normal = ray.direction };
+                TrailRenderer trail = Instantiate(bulletTrailPrefab, firePoint.position, Quaternion.identity);
+                StartCoroutine(SpawnTrail(trail, fakeHit));
+            }
         }
+    }
+
+    private IEnumerator SpawnTrail(TrailRenderer trail, RaycastHit hit)
+    {
+        float time = 0;
+        Vector3 startPosition = trail.transform.position;
+        while (time < 1)
+        {
+            trail.transform.position = Vector3.Lerp(startPosition, hit.point, time);
+            time += Time.deltaTime / trail.time;
+            yield return null;
+        }
+        trail.transform.position = hit.point;
+        if (impactParticleSystem != null)
+            Instantiate(impactParticleSystem, hit.point, Quaternion.LookRotation(hit.normal));
+        Destroy(trail.gameObject, trail.time);
     }
 }

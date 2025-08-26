@@ -42,7 +42,7 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
     [SerializeField] private float crouchResponse = 20f;
     [Space]
     [SerializeField] private float airSpeed = 10f;
-    [SerializeField] private float airAcceleration = 35f;
+    [SerializeField] private float airAcceleration = 50f; // was 35f, now stronger for air steering
     [Space]
     [SerializeField] private float jumpSpeed = 20f;
     [SerializeField] private int maxJumps = 2;
@@ -55,7 +55,7 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
     [SerializeField] private float slideStartSpeed = 54f;    // was 40f (40 * 1.35 = 54)
     [SerializeField] private float slideEndSpeed = 34f;      // was 25f (25 * 1.35 = 33.75)
     [SerializeField] private float slideFriction = 0.8f;     // (optional: lower for longer slides, e.g. try 0.7f)
-    [SerializeField] private float slideSteerAcceleration = 6.75f; // was 5f (5 * 1.35 = 6.75)
+    [SerializeField] private float slideSteerAcceleration = 10f; // was 6.75f, now stronger for slide steering
     [SerializeField] private float slideGravity = -121.5f;   // was -90f (-90 * 1.35 = -121.5)
     [Space]
     [SerializeField] private float standHeight = 2f;
@@ -168,6 +168,9 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
 
     public void UpdateBody(float deltaTime)
     {
+        // Make the game at least 50% slower
+        deltaTime *= 0.5f;
+
         // --- Dash recharge now works regardless of grounded state ---
         if (dashCharges < maxDashCharges)
         {
@@ -340,8 +343,8 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
                     var currentSpeed = currentVelocity.magnitude;
                     var targetVelocity = groundedMovement * currentVelocity.magnitude;
                     var steerVelocity = currentVelocity;
-                    // Intensify slide steering
-                    var steerForce = (targetVelocity - currentVelocity) * (slideSteerAcceleration * 2.0f) * deltaTime;
+                    // Intensify slide steering even more
+                    var steerForce = (targetVelocity - currentVelocity) * (slideSteerAcceleration * 2.5f) * deltaTime;
 
                     steerVelocity += steerForce;
                     steerVelocity = Vector3.ClampMagnitude(currentVelocity, currentSpeed);
@@ -371,8 +374,8 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
                     planeNormal: motor.CharacterUp
                 );
 
-                // Intensify air steering
-                var movementForce = planarMovement * (airAcceleration * 2.0f) * deltaTime;
+                // Intensify air steering a bit more
+                var movementForce = planarMovement * (airAcceleration * 2.2f) * deltaTime;
 
                 if (currentPlanarVelocity.magnitude < airSpeed)
                 {
@@ -444,14 +447,8 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
             // Only allow jump if jumps remain
             if ((grounded || canCoyoteJump || jumpsRemaining > 0) && jumpsRemaining > 0)
             {
-                // If in air and this is the double jump, check cooldown
                 bool isDoubleJump = !grounded && !canCoyoteJump && jumpsRemaining == 1;
-                if (isDoubleJump && doubleJumpCooldownTimer > 0f)
-                {
-                    // Double jump is on cooldown, do not allow
-                    _requestedJump = false;
-                    return;
-                }
+                // REMOVE double jump cooldown check and timer
 
                 _requestedJump = false;
                 _requestedCrouch = false;
@@ -462,7 +459,6 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
 
                 float jumpVelocity = jumpSpeed;
 
-                // If jumping from slide, scale jump height and distance with slide speed
                 if (_state.Stance == Stance.Slide)
                 {
                     float slideSpeed = currentVelocity.magnitude;
@@ -480,12 +476,6 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
                 currentVelocity += motor.CharacterUp * (targetVerticalSpeed - currentVerticalSpeed);
 
                 jumpsRemaining--;
-
-                // If this was a double jump, start cooldown
-                if (isDoubleJump)
-                {
-                    doubleJumpCooldownTimer = 1.5f; // or your desired cooldown
-                }
 
                 // Play jump SFX
                 if (jumpSFX != null && audioSource != null)
@@ -702,4 +692,15 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
         return dashCharges;
     }
 
+    void Start()
+    {
+        // Hide the capsule mesh from the camera by disabling its MeshRenderer
+        MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
+        if (meshRenderer != null)
+            meshRenderer.enabled = false;
+
+        // If your capsule is a child, hide all child MeshRenderers
+        foreach (var mr in GetComponentsInChildren<MeshRenderer>())
+            mr.enabled = false;
+    }
 }
