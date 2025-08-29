@@ -22,7 +22,7 @@ public class MagicHolder : MonoBehaviour
         if (childParticles == null || childParticles.Length == 0)
             return;
 
-        // Q: retrocede, E: avança
+        // Q: retrocede, E: avanï¿½a
         if (Input.GetKeyDown(KeyCode.Q))
         {
             SwitchParticle(-1);
@@ -38,10 +38,17 @@ public class MagicHolder : MonoBehaviour
         // Desativa o atual
         childParticles[currentIndex].gameObject.SetActive(false);
 
-        // Calcula novo índice (loop circular)
+        // Calcula novo ï¿½ndice (loop circular)
         currentIndex = (currentIndex + direction + childParticles.Length) % childParticles.Length;
 
         // Ativa o novo
         childParticles[currentIndex].gameObject.SetActive(true);
+    }
+
+    public string GetCurrentMagicName()
+    {
+        if (childParticles != null && childParticles.Length > 0)
+            return childParticles[currentIndex].gameObject.name;
+        return "";
     }
 }

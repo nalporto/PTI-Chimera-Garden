@@ -8,8 +8,8 @@ public class EnemyAiTutorial : MonoBehaviour
     public NavMeshAgent agent;
     public Transform player;
     public GameObject projectilePrefab;
-    public Transform firePoint;           // Main fire point
-    public Transform firePointSecondary;  // Optional secondary fire point for dual wielding
+    public Transform firePoint;
+    public Transform firePointSecondary;
 
     [Header("Patrol")]
     public LayerMask whatIsGround;
@@ -25,7 +25,7 @@ public class EnemyAiTutorial : MonoBehaviour
     [Header("Attack")]
     public float timeBetweenAttacks = 2f;
     private bool alreadyAttacked = false;
-    private bool usePrimaryFirePoint = true; // Track which fire point to use next
+    private bool usePrimaryFirePoint = true;
 
     [Header("Enemy Stats")]
     public float health = 5f;
@@ -57,8 +57,7 @@ public class EnemyAiTutorial : MonoBehaviour
         }
     }
 
-    // Add this to Awake() or Start()
-    void Start()
+    private void Start()
     {
         if (!agent.isOnNavMesh)
         {
@@ -137,7 +136,6 @@ public class EnemyAiTutorial : MonoBehaviour
 
         if (!alreadyAttacked && player != null)
         {
-            // Alternate between fire points if both are assigned
             Transform chosenFirePoint = firePoint;
             if (firePointSecondary != null)
             {

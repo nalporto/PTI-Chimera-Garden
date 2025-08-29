@@ -41,6 +41,8 @@ public class Shooter : MonoBehaviour
     [SerializeField] private TrailRenderer bulletTrailPrefab;
     [SerializeField] private ParticleSystem impactParticleSystem;
 
+    private MagicController.MagicType imbuedMagic = MagicController.MagicType.None;
+
     void Start()
     {
         weaponType = "PISTOL"; // Force pistol as default at runtime
@@ -104,6 +106,11 @@ public class Shooter : MonoBehaviour
         yield return new WaitForSeconds(reloadTime);
         currentAmmo = maxAmmo;
         isReloading = false;
+    }
+
+    public void SetMagicImbue(MagicController.MagicType type)
+    {
+        imbuedMagic = type;
     }
 
     void Shoot()
@@ -181,6 +188,12 @@ public class Shooter : MonoBehaviour
             if (enemyAI != null)
             {
                 enemyAI.TakeDamage(damage);
+                if (imbuedMagic == MagicController.MagicType.Fire)
+                {
+                    EnemyStatus enemyStatus = hit.collider.GetComponent<EnemyStatus>();
+                    if (enemyStatus != null)
+                        enemyStatus.ApplyFireStatus();
+                }
             }
         }
         else
