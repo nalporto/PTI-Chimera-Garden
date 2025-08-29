@@ -41,7 +41,9 @@ public class Shooter : MonoBehaviour
     [SerializeField] private TrailRenderer bulletTrailPrefab;
     [SerializeField] private ParticleSystem impactParticleSystem;
 
-    private MagicController.MagicType imbuedMagic = MagicController.MagicType.None;
+    [Header("UI")]
+    [SerializeField] private GameObject hitMarker; // Assign your hit marker GameObject in the Inspector
+    [SerializeField] private float hitMarkerDisplayTime = 0.07f; // How long the hit marker is shown
 
     void Start()
     {
@@ -51,6 +53,10 @@ public class Shooter : MonoBehaviour
         // Try to get AudioSource if not assigned
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
+
+        // Ensure hit marker is off at start
+        if (hitMarker != null)
+            hitMarker.SetActive(false);
     }
 
     void Update()
@@ -106,11 +112,6 @@ public class Shooter : MonoBehaviour
         yield return new WaitForSeconds(reloadTime);
         currentAmmo = maxAmmo;
         isReloading = false;
-    }
-
-    public void SetMagicImbue(MagicController.MagicType type)
-    {
-        imbuedMagic = type;
     }
 
     void Shoot()
@@ -188,12 +189,10 @@ public class Shooter : MonoBehaviour
             if (enemyAI != null)
             {
                 enemyAI.TakeDamage(damage);
-                if (imbuedMagic == MagicController.MagicType.Fire)
-                {
-                    EnemyStatus enemyStatus = hit.collider.GetComponent<EnemyStatus>();
-                    if (enemyStatus != null)
-                        enemyStatus.ApplyFireStatus();
-                }
+
+                // Show hit marker
+                if (hitMarker != null)
+                    StartCoroutine(ShowHitMarker());
             }
         }
         else
@@ -214,6 +213,13 @@ public class Shooter : MonoBehaviour
                 StartCoroutine(SpawnTrail(trail, fakeHit));
             }
         }
+    }
+
+    private IEnumerator ShowHitMarker()
+    {
+        hitMarker.SetActive(true);
+        yield return new WaitForSeconds(hitMarkerDisplayTime);
+        hitMarker.SetActive(false);
     }
 
     private IEnumerator SpawnTrail(TrailRenderer trail, RaycastHit hit)
