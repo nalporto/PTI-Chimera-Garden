@@ -33,6 +33,7 @@ public class EnemyAiTutorial : MonoBehaviour
 
     private Renderer[] renderers;
     private Color[] originalColors;
+    private EnemyAnimationController animController;
 
     private void Awake()
     {
@@ -55,6 +56,8 @@ public class EnemyAiTutorial : MonoBehaviour
             else
                 originalColors[i] = Color.white;
         }
+
+        animController = GetComponentInChildren<EnemyAnimationController>();
     }
 
     private void Start()
@@ -136,6 +139,10 @@ public class EnemyAiTutorial : MonoBehaviour
 
         if (!alreadyAttacked && player != null)
         {
+            // Trigger attack animation
+            if (animController != null)
+                animController.PlayAttack();
+
             Transform chosenFirePoint = firePoint;
             if (firePointSecondary != null)
             {
