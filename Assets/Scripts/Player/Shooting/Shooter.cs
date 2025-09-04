@@ -1,6 +1,12 @@
 using UnityEngine;
 using System.Collections;
 
+public enum WeaponType
+{
+    PISTOL,
+    SHOTGUN
+}
+
 public class Shooter : MonoBehaviour
 {
     [SerializeField] private Camera playerCamera;
@@ -18,6 +24,7 @@ public class Shooter : MonoBehaviour
     [SerializeField] private AudioSource audioSource;
 
     [Header("Animation")]
+    [SerializeField] private RuntimeAnimatorController weaponAnimatorController; // Assign in Inspector
     [SerializeField] private Animator weaponAnimator;
     [SerializeField] private string shootAnimTrigger = "Shoot";
     [SerializeField] private string reloadAnimTrigger = "Reload";
@@ -32,11 +39,11 @@ public class Shooter : MonoBehaviour
     public float Damage => damage;
 
     [Header("Weapon Type")]
-    [SerializeField] private string weaponType = "PISTOL"; // Use a string or int for type
+    [SerializeField] private WeaponType weaponType = WeaponType.PISTOL; // Dropdown in inspector
 
     [Header("Shotgun Settings")]
-    [SerializeField] private int pelletsPerShot = 6;
-    [SerializeField] private float spreadAngle = 8f;
+    [SerializeField] private int pelletsPerShot = 8; // 8 pellets for shotgun
+    [SerializeField] private float spreadRadius = 0.15f; // Spread radius for shotgun (meters)
 
     [SerializeField] private TrailRenderer bulletTrailPrefab;
     [SerializeField] private ParticleSystem impactParticleSystem;
@@ -45,10 +52,15 @@ public class Shooter : MonoBehaviour
     [SerializeField] private GameObject hitMarker; // Assign your hit marker GameObject in the Inspector
     [SerializeField] private float hitMarkerDisplayTime = 0.07f; // How long the hit marker is shown
 
+    [SerializeField] private SimpleDynamicCrosshair reticle; // Assign in Inspector
+
     void Start()
     {
-        weaponType = "PISTOL"; // Force pistol as default at runtime
         currentAmmo = maxAmmo;
+
+        // Assign animator controller if provided
+        if (weaponAnimator != null && weaponAnimatorController != null)
+            weaponAnimator.runtimeAnimatorController = weaponAnimatorController;
 
         // Try to get AudioSource if not assigned
         if (audioSource == null)
@@ -63,26 +75,6 @@ public class Shooter : MonoBehaviour
     {
         if (isReloading)
             return;
-
-        // --- Weapon switching ---
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            weaponType = "PISTOL";
-            if (weaponAnimator != null)
-            {
-                weaponAnimator.ResetTrigger(shootAnimTrigger);
-                weaponAnimator.ResetTrigger(reloadAnimTrigger);
-            }
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            weaponType = "SHOTGUN";
-            if (weaponAnimator != null)
-            {
-                weaponAnimator.ResetTrigger(shootAnimTrigger);
-                weaponAnimator.ResetTrigger(reloadAnimTrigger);
-            }
-        }
 
         if (Input.GetKeyDown(KeyCode.R) && currentAmmo < maxAmmo)
         {
@@ -132,23 +124,20 @@ public class Shooter : MonoBehaviour
         if (shootSFX != null && audioSource != null)
             audioSource.PlayOneShot(shootSFX);
 
-        if (weaponType == "PISTOL")
+        if (weaponType == WeaponType.PISTOL)
         {
             FireBullet(playerCamera.transform.forward);
         }
-        else if (weaponType == "SHOTGUN")
+        else if (weaponType == WeaponType.SHOTGUN)
         {
+            Vector3 origin = playerCamera.transform.position;
+            Vector3 forward = playerCamera.transform.forward;
             for (int i = 0; i < pelletsPerShot; i++)
             {
-                // Calculate spread
-                Vector3 spread = playerCamera.transform.forward;
-                spread = Quaternion.Euler(
-                    Random.Range(-spreadAngle, spreadAngle),
-                    Random.Range(-spreadAngle, spreadAngle),
-                    0f
-                ) * spread;
-
-                FireBullet(spread);
+                // Random point in circle for spread
+                Vector2 circle = Random.insideUnitCircle * spreadRadius;
+                Vector3 spreadDir = (forward + playerCamera.transform.right * circle.x + playerCamera.transform.up * circle.y).normalized;
+                FireBullet(spreadDir);
             }
         }
     }

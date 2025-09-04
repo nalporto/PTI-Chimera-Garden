@@ -10,15 +10,17 @@ public class PlayerCamera : MonoBehaviour
     [SerializeField] private float sensitivity = 0.1f;
     [SerializeField] private Transform weapon; // Assign in Inspector
     [SerializeField] private Vector3 weaponOffset = new Vector3(0f, -0.2f, 2.0f);
-    private Vector3 _eulerAngles;
     [SerializeField] private Camera mainCamera; // Drag your Camera here in the Inspector
-    private float _currentFov;
     [SerializeField] private float minPitch = -90f; // Look down limit
     [SerializeField] private float maxPitch = 90f;  // Look up limit
+    [SerializeField] private float cameraHeight = 0f; // Editable camera height in Inspector
+
+    private Vector3 _eulerAngles;
+    private float _currentFov;
 
     public void Initialize(Transform target)
     {
-        transform.position = target.position;
+        transform.position = target.position + new Vector3(0f, cameraHeight, 0f);
         transform.eulerAngles = _eulerAngles = target.eulerAngles;
         if (weapon != null)
         {
@@ -40,6 +42,9 @@ public class PlayerCamera : MonoBehaviour
         {
             weapon.rotation = transform.rotation * Quaternion.Euler(0,0,0);
         }
+
+        // Set camera height on awake
+        transform.position += new Vector3(0f, cameraHeight, 0f);
     }
 
     public void UpdateRotation(CameraInput input)
@@ -57,7 +62,7 @@ public class PlayerCamera : MonoBehaviour
 
     public void UpdatePosition(Transform target)
     {
-        transform.position = target.position;
+        transform.position = target.position + new Vector3(0f, cameraHeight, 0f);
         if (weapon != null)
         {
             weapon.position = transform.position + transform.TransformDirection(weaponOffset);
