@@ -82,6 +82,15 @@ public class EnemyAiTutorial : MonoBehaviour
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
 
+        // Check if the player is visible (not obstructed by walls)
+        if (playerInSightRange)
+        {
+            Vector3 directionToPlayer = (player.position - transform.position).normalized;
+            float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+
+
+        }
+
         if (!playerInSightRange && !playerInAttackRange) Patrol();
         else if (playerInSightRange && !playerInAttackRange) ChasePlayer();
         else if (playerInAttackRange && playerInSightRange) AttackPlayer();
