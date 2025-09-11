@@ -4,12 +4,18 @@ using System.Collections;
 
 public class EnemyAiTutorial : MonoBehaviour
 {
+    public enum State { Patrol, Chase, Attack }
+    private State currentState = State.Patrol;
+
     [Header("References")]
     public NavMeshAgent agent;
     public Transform player;
     public GameObject projectilePrefab;
     public Transform firePoint;
     public Transform firePointSecondary;
+    public EnemyAnimationController animController;
+    [Header("Animator")]
+    public Animator animator;
 
     [Header("Patrol")]
     public LayerMask whatIsGround;
@@ -19,12 +25,12 @@ public class EnemyAiTutorial : MonoBehaviour
 
     [Header("Detection")]
     public LayerMask whatIsPlayer;
-    public float sightRange = 20f, attackRange = 10f;
-    private bool playerInSightRange, playerInAttackRange;
+    public float sightRange = 20f;
+    public float attackRange = 2f; // Close range
 
     [Header("Attack")]
     public float timeBetweenAttacks = 2f;
-    private bool alreadyAttacked = false;
+    private float attackCooldown = 0f;
     private bool usePrimaryFirePoint = true;
 
     [Header("Enemy Stats")]
@@ -33,7 +39,6 @@ public class EnemyAiTutorial : MonoBehaviour
 
     private Renderer[] renderers;
     private Color[] originalColors;
-    private EnemyAnimationController animController;
 
     private void Awake()
     {
@@ -57,7 +62,11 @@ public class EnemyAiTutorial : MonoBehaviour
                 originalColors[i] = Color.white;
         }
 
-        animController = GetComponentInChildren<EnemyAnimationController>();
+        if (animController == null)
+            animController = GetComponentInChildren<EnemyAnimationController>();
+
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>();
     }
 
     private void Start()
@@ -79,21 +88,41 @@ public class EnemyAiTutorial : MonoBehaviour
 
     private void Update()
     {
-        playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);
-        playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
+        if (player == null) return;
 
-        // Check if the player is visible (not obstructed by walls)
-        if (playerInSightRange)
+        // Cooldown timer for attacks
+        if (attackCooldown > 0f)
+            attackCooldown -= Time.deltaTime;
+
+        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+        bool playerInSight = distanceToPlayer <= sightRange;
+        bool playerInAttack = distanceToPlayer <= attackRange;
+
+        // Set Animator bool for attack range
+        if (animator != null)
+            animator.SetBool("IsInAttackRange", playerInAttack);
+
+        // State transitions
+        if (playerInAttack)
+            currentState = State.Attack;
+        else if (playerInSight)
+            currentState = State.Chase;
+        else
+            currentState = State.Patrol;
+
+        // State actions
+        switch (currentState)
         {
-            Vector3 directionToPlayer = (player.position - transform.position).normalized;
-            float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-
-
+            case State.Patrol:
+                Patrol();
+                break;
+            case State.Chase:
+                ChasePlayer();
+                break;
+            case State.Attack:
+                AttackPlayer();
+                break;
         }
-
-        if (!playerInSightRange && !playerInAttackRange) Patrol();
-        else if (playerInSightRange && !playerInAttackRange) ChasePlayer();
-        else if (playerInAttackRange && playerInSightRange) AttackPlayer();
     }
 
     private void Patrol()
@@ -102,8 +131,6 @@ public class EnemyAiTutorial : MonoBehaviour
 
         if (walkPointSet && agent.isOnNavMesh)
             agent.SetDestination(walkPoint);
-        else
-            Debug.LogWarning($"{gameObject.name} is not on the NavMesh!");
 
         Vector3 distanceToWalkPoint = transform.position - walkPoint;
         if (distanceToWalkPoint.magnitude < 1f)
@@ -123,35 +150,26 @@ public class EnemyAiTutorial : MonoBehaviour
 
     private void ChasePlayer()
     {
-        if (player != null)
-        {
+        if (agent.isOnNavMesh)
             agent.SetDestination(player.position);
 
-            Vector3 lookDir = (player.position - transform.position).normalized;
-            lookDir.y = 0;
-            if (lookDir != Vector3.zero)
-                transform.rotation = Quaternion.LookRotation(lookDir);
-        }
+        FacePlayer();
     }
 
     private void AttackPlayer()
     {
-        agent.SetDestination(transform.position);
+        if (agent.isOnNavMesh)
+            agent.SetDestination(transform.position); // Stop moving
 
-        if (player != null)
-        {
-            Vector3 lookDir = (player.position - transform.position).normalized;
-            lookDir.y = 0;
-            if (lookDir != Vector3.zero)
-                transform.rotation = Quaternion.LookRotation(lookDir);
-        }
+        FacePlayer();
 
-        if (!alreadyAttacked && player != null)
+        if (attackCooldown <= 0f)
         {
-            // Trigger attack animation
+            // Play attack animation
             if (animController != null)
                 animController.PlayAttack();
 
+            // Fire projectile
             Transform chosenFirePoint = firePoint;
             if (firePointSecondary != null)
             {
@@ -164,14 +182,16 @@ public class EnemyAiTutorial : MonoBehaviour
 
             Instantiate(projectilePrefab, chosenFirePoint.position, Quaternion.LookRotation(dir));
 
-            alreadyAttacked = true;
-            Invoke(nameof(ResetAttack), timeBetweenAttacks);
+            attackCooldown = timeBetweenAttacks;
         }
     }
 
-    private void ResetAttack()
+    private void FacePlayer()
     {
-        alreadyAttacked = false;
+        Vector3 lookDir = (player.position - transform.position).normalized;
+        lookDir.y = 0;
+        if (lookDir != Vector3.zero)
+            transform.rotation = Quaternion.LookRotation(lookDir);
     }
 
     public void TakeDamage(float damage)
