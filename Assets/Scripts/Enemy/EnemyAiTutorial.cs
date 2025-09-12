@@ -7,6 +7,9 @@ public class EnemyAiTutorial : MonoBehaviour
     public enum State { Patrol, Chase, Attack }
     private State currentState = State.Patrol;
 
+    public enum AttackType { Melee, Ranged }
+    public AttackType attackType = AttackType.Ranged; // Choose in Inspector
+
     [Header("References")]
     public NavMeshAgent agent;
     public Transform player;
@@ -36,9 +39,15 @@ public class EnemyAiTutorial : MonoBehaviour
     [Header("Enemy Stats")]
     public float health = 5f;
     public int damage = 1;
+    public int meleeDamage = 10;
+    public float meleeRange = 2f;
+
+    public GameObject meleeDamager; // Assign in Inspector (e.g., a child GameObject with a collider)
+    private EnemyDamager damagerScript;
 
     private Renderer[] renderers;
     private Color[] originalColors;
+    private PlayerHealth playerHealth;
 
     private void Awake()
     {
@@ -67,6 +76,13 @@ public class EnemyAiTutorial : MonoBehaviour
 
         if (animator == null)
             animator = GetComponentInChildren<Animator>();
+
+        if (meleeDamager != null)
+        {
+            damagerScript = meleeDamager.GetComponent<EnemyDamager>();
+            if (damagerScript != null)
+                damagerScript.enemyAI = this; // So the damager can call back to this script
+        }
     }
 
     private void Start()
@@ -98,29 +114,42 @@ public class EnemyAiTutorial : MonoBehaviour
         bool playerInSight = distanceToPlayer <= sightRange;
         bool playerInAttack = distanceToPlayer <= attackRange;
 
-        // Set Animator bool for attack range
+        // Set Animator bools for chasing and attacking
         if (animator != null)
-            animator.SetBool("IsInAttackRange", playerInAttack);
+        {
+            animator.SetBool("IsChasing", currentState == State.Chase);
+            animator.SetBool("IsAttacking", currentState == State.Attack && playerInAttack);
+        }
 
-        // State transitions
-        if (playerInAttack)
-            currentState = State.Attack;
-        else if (playerInSight)
-            currentState = State.Chase;
-        else
-            currentState = State.Patrol;
 
-        // State actions
+        // State transitions and actions
         switch (currentState)
         {
             case State.Patrol:
-                Patrol();
+                if (playerInSight)
+                    currentState = State.Chase;
+                else
+                    Patrol();
                 break;
+
             case State.Chase:
-                ChasePlayer();
+                if (playerInAttack)
+                    currentState = State.Attack;
+                else if (!playerInSight)
+                    currentState = State.Patrol;
+                else
+                    ChasePlayer();
                 break;
+
             case State.Attack:
-                AttackPlayer();
+                if (!playerInAttack)
+                {
+                    currentState = State.Chase;
+                }
+                else
+                {
+                    AttackPlayer();
+                }
                 break;
         }
     }
@@ -144,6 +173,7 @@ public class EnemyAiTutorial : MonoBehaviour
 
         walkPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
 
+        // Fix: Raycast expects the origin as a Vector3, not a float
         if (Physics.Raycast(walkPoint, -transform.up, 2f, whatIsGround))
             walkPointSet = true;
     }
@@ -165,22 +195,30 @@ public class EnemyAiTutorial : MonoBehaviour
 
         if (attackCooldown <= 0f)
         {
-            // Play attack animation
             if (animController != null)
                 animController.PlayAttack();
 
-            // Fire projectile
-            Transform chosenFirePoint = firePoint;
-            if (firePointSecondary != null)
+            if (attackType == AttackType.Ranged)
             {
-                chosenFirePoint = usePrimaryFirePoint ? firePoint : firePointSecondary;
-                usePrimaryFirePoint = !usePrimaryFirePoint;
+                // Fire projectile
+                Transform chosenFirePoint = firePoint;
+                if (firePointSecondary != null)
+                {
+                    chosenFirePoint = usePrimaryFirePoint ? firePoint : firePointSecondary;
+                    usePrimaryFirePoint = !usePrimaryFirePoint;
+                }
+
+                Vector3 targetPos = player.position + Vector3.up * 1.0f;
+                Vector3 dir = (targetPos - chosenFirePoint.position).normalized;
+
+                Instantiate(projectilePrefab, chosenFirePoint.position, Quaternion.LookRotation(dir));
             }
-
-            Vector3 targetPos = player.position + Vector3.up * 1.0f;
-            Vector3 dir = (targetPos - chosenFirePoint.position).normalized;
-
-            Instantiate(projectilePrefab, chosenFirePoint.position, Quaternion.LookRotation(dir));
+            else if (attackType == AttackType.Melee)
+            {
+                // Enable the damager for a short time (e.g., during the attack animation)
+                if (damagerScript != null)
+                    damagerScript.EnableDamagerForDuration(0.3f); // 0.3s or match your animation
+            }
 
             attackCooldown = timeBetweenAttacks;
         }
