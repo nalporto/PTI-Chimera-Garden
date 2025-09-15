@@ -29,9 +29,21 @@ public class Shooter : MonoBehaviour
     [SerializeField] private string shootAnimTrigger = "Shoot";
     [SerializeField] private string reloadAnimTrigger = "Reload";
 
+    // Animator bool names
+    private const string ANIM_IS_SWITCHED_IN = "IsSwitchedIn";
+    private const string ANIM_IS_SHOOTING = "IsShooting";
+    private const string ANIM_IS_RELOADING = "IsReloading";
+
+    // timing
+    [SerializeField] private float switchInDelay = 0.3f;
+    private Coroutine switchInCoroutine;
+    private Coroutine resetShootingCoroutine;
+    [SerializeField] private float shootingBoolDuration = 0.12f;
+
     private int currentAmmo;
     private bool isReloading = false;
     private float nextFireTime = 0f;
+    private Coroutine reloadCoroutine; // track reload coroutine
 
     public int CurrentAmmo => currentAmmo;
     public int MagSize => maxAmmo;
@@ -62,6 +74,18 @@ public class Shooter : MonoBehaviour
         if (weaponAnimator != null && weaponAnimatorController != null)
             weaponAnimator.runtimeAnimatorController = weaponAnimatorController;
 
+        // try auto-assign animator if null
+        if (weaponAnimator == null)
+            weaponAnimator = GetComponentInChildren<Animator>();
+
+        // initialize animator bools
+        if (weaponAnimator != null)
+        {
+            weaponAnimator.SetBool(ANIM_IS_SWITCHED_IN, false); // start false
+            weaponAnimator.SetBool(ANIM_IS_SHOOTING, false);
+            weaponAnimator.SetBool(ANIM_IS_RELOADING, false);
+        }
+
         // Try to get AudioSource if not assigned
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
@@ -78,7 +102,9 @@ public class Shooter : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.R) && currentAmmo < maxAmmo)
         {
-            StartCoroutine(Reload());
+            // start and track reload coroutine so we can stop it if needed
+            if (reloadCoroutine != null) StopCoroutine(reloadCoroutine);
+            reloadCoroutine = StartCoroutine(Reload());
             return;
         }
 
@@ -89,21 +115,89 @@ public class Shooter : MonoBehaviour
         }
     }
 
+    // Call when weapon is equipped/switched in
+    public void SwitchIn()
+    {
+        if (weaponAnimator != null)
+            weaponAnimator.SetBool(ANIM_IS_SWITCHED_IN, false);
+
+        if (switchInCoroutine != null)
+            StopCoroutine(switchInCoroutine);
+        switchInCoroutine = StartCoroutine(DelayedSetSwitchedIn(switchInDelay));
+    }
+
+    // Call when weapon is switched out
+    public void SwitchOut()
+    {
+        if (switchInCoroutine != null)
+        {
+            StopCoroutine(switchInCoroutine);
+            switchInCoroutine = null;
+        }
+
+        if (resetShootingCoroutine != null)
+        {
+            StopCoroutine(resetShootingCoroutine);
+            resetShootingCoroutine = null;
+        }
+
+        // stop an in-progress reload and ensure animator bool cleared
+        if (reloadCoroutine != null)
+        {
+            StopCoroutine(reloadCoroutine);
+            reloadCoroutine = null;
+        }
+        isReloading = false;
+        if (weaponAnimator != null)
+            weaponAnimator.SetBool(ANIM_IS_RELOADING, false);
+
+        if (weaponAnimator != null)
+        {
+            weaponAnimator.SetBool(ANIM_IS_SWITCHED_IN, false);
+            weaponAnimator.SetBool(ANIM_IS_SHOOTING, false);
+        }
+    }
+
+    private IEnumerator DelayedSetSwitchedIn(float delay)
+    {
+        yield return new WaitForSecondsRealtime(delay);
+        if (weaponAnimator != null)
+            weaponAnimator.SetBool(ANIM_IS_SWITCHED_IN, true);
+        switchInCoroutine = null;
+    }
+
     System.Collections.IEnumerator Reload()
     {
+        // prevent reload when at full ammo
+        if (currentAmmo >= maxAmmo)
+            yield break;
+
+        // ensure previous reload coroutine reference cleared on exit
         isReloading = true;
+        if (weaponAnimator != null)
+            weaponAnimator.SetBool(ANIM_IS_RELOADING, true);
 
-        // Play reload animation if assigned
-        if (weaponAnimator != null && !string.IsNullOrEmpty(reloadAnimTrigger))
-            weaponAnimator.SetTrigger(reloadAnimTrigger);
+        try
+        {
+            // use realtime so timescale changes don't prematurely finish reload
+            if (reloadSFX != null && audioSource != null)
+                audioSource.PlayOneShot(reloadSFX);
 
-        // Play reload SFX if assigned
-        if (reloadSFX != null && audioSource != null)
-            audioSource.PlayOneShot(reloadSFX);
+            if (weaponAnimator != null && !string.IsNullOrEmpty(reloadAnimTrigger))
+                weaponAnimator.SetTrigger(reloadAnimTrigger);
 
-        yield return new WaitForSeconds(reloadTime);
-        currentAmmo = maxAmmo;
-        isReloading = false;
+            yield return new WaitForSecondsRealtime(reloadTime);
+
+            currentAmmo = maxAmmo;
+        }
+        finally
+        {
+            // always clear reloading state and animator bool even if coroutine stopped
+            isReloading = false;
+            if (weaponAnimator != null)
+                weaponAnimator.SetBool(ANIM_IS_RELOADING, false);
+            reloadCoroutine = null;
+        }
     }
 
     void Shoot()
@@ -116,9 +210,18 @@ public class Shooter : MonoBehaviour
 
         currentAmmo--;
 
-        // Play shoot animation if assigned
+        // Play shoot animation trigger if assigned
         if (weaponAnimator != null && !string.IsNullOrEmpty(shootAnimTrigger))
             weaponAnimator.SetTrigger(shootAnimTrigger);
+
+        // Set IsShooting bool briefly
+        if (weaponAnimator != null)
+        {
+            weaponAnimator.SetBool(ANIM_IS_SHOOTING, true);
+            if (resetShootingCoroutine != null)
+                StopCoroutine(resetShootingCoroutine);
+            resetShootingCoroutine = StartCoroutine(ResetShootingBool(shootingBoolDuration));
+        }
 
         // Play shoot SFX if assigned
         if (shootSFX != null && audioSource != null)
@@ -142,6 +245,14 @@ public class Shooter : MonoBehaviour
         }
     }
 
+    private IEnumerator ResetShootingBool(float delay)
+    {
+        yield return new WaitForSecondsRealtime(delay);
+        if (weaponAnimator != null)
+            weaponAnimator.SetBool(ANIM_IS_SHOOTING, false);
+        resetShootingCoroutine = null;
+    }
+
     void FireBullet(Vector3 direction)
     {
         Vector3 origin = playerCamera.transform.position;
@@ -151,6 +262,7 @@ public class Shooter : MonoBehaviour
         if (Physics.Raycast(ray, out hit, 100f))
         {
             Debug.DrawLine(ray.origin, hit.point, Color.yellow, 1f);
+            Debug.Log($"Bullet hit: {hit.collider.name} (tag: {hit.collider.tag})"); // debug
 
             if (fireEffect != null)
             {
@@ -173,8 +285,8 @@ public class Shooter : MonoBehaviour
                 StartCoroutine(SpawnTrail(trail, hit));
             }
 
-            // Damage EnemyAiTutorial if hit
-            EnemyAiTutorial enemyAI = hit.collider.GetComponent<EnemyAiTutorial>();
+            // find EnemyAiTutorial on the hit collider or its parents
+            EnemyAiTutorial enemyAI = hit.collider.GetComponentInParent<EnemyAiTutorial>();
             if (enemyAI != null)
             {
                 enemyAI.TakeDamage(damage);
@@ -206,6 +318,7 @@ public class Shooter : MonoBehaviour
 
     private IEnumerator ShowHitMarker()
     {
+        if (hitMarker == null) yield break;
         hitMarker.SetActive(true);
         yield return new WaitForSeconds(hitMarkerDisplayTime);
         hitMarker.SetActive(false);
