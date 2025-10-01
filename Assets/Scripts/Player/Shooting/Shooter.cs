@@ -259,10 +259,12 @@ public class Shooter : MonoBehaviour
         RaycastHit hit;
         Ray ray = new Ray(origin, direction);
 
-        if (Physics.Raycast(ray, out hit, 100f))
+        // use default layer mask (hit everything) and allow hitting trigger colliders
+        int layerMask = ~0;
+        if (Physics.Raycast(ray, out hit, 100f, layerMask, QueryTriggerInteraction.Collide))
         {
             Debug.DrawLine(ray.origin, hit.point, Color.yellow, 1f);
-            Debug.Log($"Bullet hit: {hit.collider.name} (tag: {hit.collider.tag})"); // debug
+            Debug.Log($"Bullet hit: {hit.collider.name} (layer {hit.collider.gameObject.layer})");
 
             if (fireEffect != null)
             {
@@ -278,22 +280,43 @@ public class Shooter : MonoBehaviour
                 Destroy(hitFx.gameObject, hitFx.main.duration);
             }
 
-            // Spawn bullet trail
             if (bulletTrailPrefab != null)
             {
                 TrailRenderer trail = Instantiate(bulletTrailPrefab, firePoint.position, Quaternion.identity);
                 StartCoroutine(SpawnTrail(trail, hit));
             }
 
-            // find EnemyAiTutorial on the hit collider or its parents
-            EnemyAiTutorial enemyAI = hit.collider.GetComponentInParent<EnemyAiTutorial>();
-            if (enemyAI != null)
+            // NEW: if the hit object (or its parents) is tagged "Enemy", call HitReceiver
+            Transform t = hit.collider.transform;
+            var hitReceiver = t.GetComponentInParent<HitReceiver>();
+            if (hitReceiver != null && hit.collider.CompareTag("Enemy"))
             {
-                enemyAI.TakeDamage(damage);
-
-                // Show hit marker
+                hitReceiver.TakeDamage(damage);
                 if (hitMarker != null)
                     StartCoroutine(ShowHitMarker());
+            }
+            else
+            {
+                // fallback: if root is tagged Enemy but collider isn't (handles different setups)
+                Transform root = t.root;
+                if (root != null && root.CompareTag("Enemy"))
+                {
+                    var hr = root.GetComponentInChildren<HitReceiver>();
+                    if (hr != null)
+                    {
+                        hr.TakeDamage(damage);
+                        if (hitMarker != null)
+                            StartCoroutine(ShowHitMarker());
+                    }
+                    else
+                    {
+                        Debug.Log($"Hit enemy root '{root.name}' but no HitReceiver found.", root.gameObject);
+                    }
+                }
+                else
+                {
+                    Debug.Log($"No HitReceiver on {hit.collider.name} or parents. Check HitReceiver placement and 'Enemy' tag.", hit.collider.gameObject);
+                }
             }
         }
         else
