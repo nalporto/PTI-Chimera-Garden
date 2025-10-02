@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -4492083890695011520}
   - component: {fileID: -1022227570918917426}
   m_Layer: 0
-  m_Name: Projectile1
+  m_Name: Projectile_PlaceHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -122,9 +122,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c7868b2b72a141449681d805b78b5bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 20
-  speed: 45
-  lifetime: 2
+  damage: 10
+  speed: 80
+  lifetime: 1.5
 --- !u!54 &-1022227570918917426
 Rigidbody:
   m_ObjectHideFlags: 0

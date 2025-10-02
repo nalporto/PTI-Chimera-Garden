@@ -690,6 +690,7 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
     {
         if (isGrappling && grappleLine != null)
         {
+            grappleLine.enabled = true;
             grappleLine.SetPosition(0, firePoint != null ? firePoint.position : transform.position);
             grappleLine.SetPosition(1, grapplePoint);
         }
