@@ -44,6 +44,7 @@ public class Shooter : MonoBehaviour
     private bool isReloading = false;
     private float nextFireTime = 0f;
     private Coroutine reloadCoroutine; // track reload coroutine
+    private PlayerHealth playerHealth;
 
     public int CurrentAmmo => currentAmmo;
     public int MagSize => maxAmmo;
@@ -69,6 +70,9 @@ public class Shooter : MonoBehaviour
     void Start()
     {
         currentAmmo = maxAmmo;
+
+        // Get reference to PlayerHealth
+        playerHealth = FindObjectOfType<PlayerHealth>();
 
         // Assign animator controller if provided
         if (weaponAnimator != null && weaponAnimatorController != null)
@@ -97,6 +101,10 @@ public class Shooter : MonoBehaviour
 
     void Update()
     {
+        // Don't allow shooting or reloading if player is dead
+        if (playerHealth != null && playerHealth.IsDead)
+            return;
+            
         if (isReloading)
             return;
 
@@ -263,8 +271,18 @@ public class Shooter : MonoBehaviour
         int layerMask = ~0;
         if (Physics.Raycast(ray, out hit, 100f, layerMask, QueryTriggerInteraction.Collide))
         {
-            Debug.DrawLine(ray.origin, hit.point, Color.yellow, 1f);
-            Debug.Log($"Bullet hit: {hit.collider.name} (layer {hit.collider.gameObject.layer})");
+            // Different colors based on what was hit
+            Color debugColor = Color.yellow; // Default
+            
+            if (hit.collider.CompareTag("Enemy"))
+                debugColor = Color.green; // Enemy hit = Green
+            else if (hit.collider.CompareTag("Ground"))
+                debugColor = Color.blue;  // Ground hit = Blue
+            else
+                debugColor = Color.yellow; // Other hit = Yellow
+                
+            Debug.DrawLine(ray.origin, hit.point, debugColor, 2f);
+            Debug.Log($"Bullet HIT: {hit.collider.name} (layer {hit.collider.gameObject.layer}) - Tag: {hit.collider.tag}");
 
             if (fireEffect != null)
             {
@@ -321,6 +339,11 @@ public class Shooter : MonoBehaviour
         }
         else
         {
+            // MISS - Draw red line to max distance
+            Vector3 endPoint = ray.origin + ray.direction * 100f;
+            Debug.DrawLine(ray.origin, endPoint, Color.red, 2f);
+            Debug.Log("Bullet MISSED - no collision detected");
+
             if (fireEffect != null)
             {
                 ParticleSystem fire = Instantiate(fireEffect, firePoint.position, firePoint.rotation, firePoint);
@@ -331,8 +354,8 @@ public class Shooter : MonoBehaviour
             // Spawn bullet trail to max distance
             if (bulletTrailPrefab != null)
             {
-                Vector3 endPoint = ray.origin + ray.direction * 100f;
-                RaycastHit fakeHit = new RaycastHit { point = endPoint, normal = ray.direction };
+                Vector3 endPoint2 = ray.origin + ray.direction * 100f;
+                RaycastHit fakeHit = new RaycastHit { point = endPoint2, normal = ray.direction };
                 TrailRenderer trail = Instantiate(bulletTrailPrefab, firePoint.position, Quaternion.identity);
                 StartCoroutine(SpawnTrail(trail, fakeHit));
             }

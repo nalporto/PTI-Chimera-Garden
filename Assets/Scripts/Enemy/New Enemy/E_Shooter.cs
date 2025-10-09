@@ -10,7 +10,8 @@ public class E_Shooter : MonoBehaviour
     public Animator animator;
 
     [Header("Settings")]
-    public float walkSpeed = 7f; // Add this line for walk speed
+    [Tooltip("If 0, uses NavMeshAgent's Inspector speed value")]
+    public float walkSpeed = 0f; // 0 = use NavMeshAgent Inspector speed
     public float shootInterval = 1f;
     public float shootingRadius = 10f;      // Distance at which enemy stops and shoots
 
@@ -22,13 +23,22 @@ public class E_Shooter : MonoBehaviour
 
     private float shootTimer = 0f;
     private NavMeshAgent agent;
+    private float originalAgentSpeed; // Store original speed from Inspector
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         if (agent != null)
         {
-            agent.speed = walkSpeed; // Set walk speed here
+            // Store the original speed from Inspector
+            originalAgentSpeed = agent.speed;
+            
+            // Only override if walkSpeed is set (> 0)
+            if (walkSpeed > 0f)
+            {
+                agent.speed = walkSpeed;
+                originalAgentSpeed = walkSpeed;
+            }
         }
     }
 
@@ -62,7 +72,8 @@ public class E_Shooter : MonoBehaviour
             if (agent != null && agent.isActiveAndEnabled)
             {
                 agent.isStopped = false;
-                agent.speed = walkSpeed; // <-- Force speed here
+                // Use original speed instead of hardcoded walkSpeed
+                agent.speed = originalAgentSpeed;
             }
             animator.SetBool("IsChasing", true);
         }
