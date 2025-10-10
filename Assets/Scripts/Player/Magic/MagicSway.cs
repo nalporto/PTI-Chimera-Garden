@@ -14,10 +14,26 @@ public class Magicswaying : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        if (targetA == null) targetA = transform;
-        if (targetB == null) targetB = transform;
-        initialPositionA = targetA.localPosition;
-        initialPositionB = targetB.localPosition;
+        // Auto-assign CoreMagic as targetA if not manually assigned
+        if (targetA == null)
+        {
+            Transform coreMagic = transform.Find("CoreMagic");
+            if (coreMagic != null)
+            {
+                targetA = coreMagic;
+                Debug.Log($"Auto-assigned CoreMagic as targetA for {gameObject.name}");
+            }
+            else
+            {
+                Debug.LogWarning($"CoreMagic child not found in {gameObject.name}. Please assign targetA manually.");
+            }
+        }
+        
+        // Only initialize positions if targets are assigned
+        if (targetA != null)
+            initialPositionA = targetA.localPosition;
+        if (targetB != null)
+            initialPositionB = targetB.localPosition;
     }
 
     // Update is called once per frame
@@ -26,11 +42,18 @@ public class Magicswaying : MonoBehaviour
         // Move up and down on Z axis
         float zOffset = Mathf.Sin(Time.time * moveFrequency) * moveAmplitude;
 
-        targetA.localPosition = initialPositionA + new Vector3(0f, 0f, zOffset);
-        targetB.localPosition = initialPositionB + new Vector3(0f, 0f, zOffset);
-
-        // Rotate on all axes
-        targetA.Rotate(rotationSpeed * Time.deltaTime);
-        targetB.Rotate(rotationSpeed * Time.deltaTime);
+        // Apply movement and rotation to targetA if assigned
+        if (targetA != null)
+        {
+            targetA.localPosition = initialPositionA + new Vector3(0f, 0f, zOffset);
+            targetA.Rotate(rotationSpeed * Time.deltaTime);
+        }
+        
+        // Apply movement and rotation to targetB if assigned
+        if (targetB != null)
+        {
+            targetB.localPosition = initialPositionB + new Vector3(0f, 0f, zOffset);
+            targetB.Rotate(rotationSpeed * Time.deltaTime);
+        }
     }
 }

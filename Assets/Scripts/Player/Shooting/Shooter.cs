@@ -45,6 +45,7 @@ public class Shooter : MonoBehaviour
     private float nextFireTime = 0f;
     private Coroutine reloadCoroutine; // track reload coroutine
     private PlayerHealth playerHealth;
+    private bool hasFirstShotFired = false;
 
     public int CurrentAmmo => currentAmmo;
     public int MagSize => maxAmmo;
@@ -118,8 +119,17 @@ public class Shooter : MonoBehaviour
 
         if (Input.GetMouseButton(0) && Time.time >= nextFireTime)
         {
-            Shoot();
-            nextFireTime = Time.time + fireRate;
+            if (currentAmmo <= 0)
+            {
+                // Auto-reload when out of ammo and trying to shoot
+                if (reloadCoroutine != null) StopCoroutine(reloadCoroutine);
+                reloadCoroutine = StartCoroutine(Reload());
+            }
+            else
+            {
+                Shoot();
+                nextFireTime = Time.time + fireRate;
+            }
         }
     }
 
@@ -212,8 +222,20 @@ public class Shooter : MonoBehaviour
     {
         if (currentAmmo <= 0)
         {
-            // Optionally: play empty click sound here
+            // Auto-reload when trying to shoot with no ammo
+            if (reloadCoroutine != null) StopCoroutine(reloadCoroutine);
+            reloadCoroutine = StartCoroutine(Reload());
             return;
+        }
+
+        // Start stopwatch on first shot
+        if (!hasFirstShotFired)
+        {
+            hasFirstShotFired = true;
+            if (StopwatchUI.Instance != null && !StopwatchUI.Instance.IsRunning())
+            {
+                StopwatchUI.Instance.StartStopwatch();
+            }
         }
 
         currentAmmo--;

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 using System.Collections;
 
@@ -96,23 +97,15 @@ public class DeathScreen : MonoBehaviour
     
     public void RestartGame()
     {
-        // Restore time
+        // Restore time before changing scenes
         Time.timeScale = 1f;
         
         // Restore cursor state
-        Cursor.lockState = previousCursorLockState;
-        Cursor.visible = previousCursorVisible;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         
-        // Re-enable player controls
-        EnablePlayerControls();
-        
-        // Resume the music
-        if (musicAudioSource != null)
-        {
-            musicAudioSource.UnPause();
-        }
-        
-        deathScreenPanel.SetActive(false);
+        // Load the Game scene
+        SceneManager.LoadScene("Game");
     }
     
     private void DisablePlayerControls()
