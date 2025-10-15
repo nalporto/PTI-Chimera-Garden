@@ -289,22 +289,21 @@ public class Shooter : MonoBehaviour
         RaycastHit hit;
         Ray ray = new Ray(origin, direction);
 
-        // use default layer mask (hit everything) and allow hitting trigger colliders
-        int layerMask = ~0;
-        if (Physics.Raycast(ray, out hit, 100f, layerMask, QueryTriggerInteraction.Collide))
+        int layerMask = ~LayerMask.GetMask("Player", "Weapons");
+        
+        if (Physics.Raycast(ray, out hit, 100f, layerMask, QueryTriggerInteraction.Ignore))
         {
-            // Different colors based on what was hit
-            Color debugColor = Color.yellow; // Default
+            Color debugColor = Color.yellow;
             
             if (hit.collider.CompareTag("Enemy"))
-                debugColor = Color.green; // Enemy hit = Green
+                debugColor = Color.green;
             else if (hit.collider.CompareTag("Ground"))
-                debugColor = Color.blue;  // Ground hit = Blue
+                debugColor = Color.blue;
             else
-                debugColor = Color.yellow; // Other hit = Yellow
+                debugColor = Color.yellow;
                 
             Debug.DrawLine(ray.origin, hit.point, debugColor, 2f);
-            Debug.Log($"Bullet HIT: {hit.collider.name} (layer {hit.collider.gameObject.layer}) - Tag: {hit.collider.tag}");
+            Debug.Log($"Bullet HIT: {hit.collider.name} (layer {LayerMask.LayerToName(hit.collider.gameObject.layer)}) at distance {hit.distance:F2}m - Tag: {hit.collider.tag}");
 
             if (fireEffect != null)
             {
@@ -326,45 +325,24 @@ public class Shooter : MonoBehaviour
                 StartCoroutine(SpawnTrail(trail, hit));
             }
 
-            // NEW: if the hit object (or its parents) is tagged "Enemy", call HitReceiver
-            Transform t = hit.collider.transform;
-            var hitReceiver = t.GetComponentInParent<HitReceiver>();
-            if (hitReceiver != null && hit.collider.CompareTag("Enemy"))
+            HitReceiver hitReceiver = hit.collider.GetComponentInParent<HitReceiver>();
+            if (hitReceiver != null)
             {
                 hitReceiver.TakeDamage(damage);
                 if (hitMarker != null)
                     StartCoroutine(ShowHitMarker());
+                
+                Debug.Log($"Damage applied to {hitReceiver.gameObject.name}");
             }
             else
             {
-                // fallback: if root is tagged Enemy but collider isn't (handles different setups)
-                Transform root = t.root;
-                if (root != null && root.CompareTag("Enemy"))
-                {
-                    var hr = root.GetComponentInChildren<HitReceiver>();
-                    if (hr != null)
-                    {
-                        hr.TakeDamage(damage);
-                        if (hitMarker != null)
-                            StartCoroutine(ShowHitMarker());
-                    }
-                    else
-                    {
-                        Debug.Log($"Hit enemy root '{root.name}' but no HitReceiver found.", root.gameObject);
-                    }
-                }
-                else
-                {
-                    Debug.Log($"No HitReceiver on {hit.collider.name} or parents. Check HitReceiver placement and 'Enemy' tag.", hit.collider.gameObject);
-                }
+                Debug.LogWarning($"Hit collider '{hit.collider.name}' but no HitReceiver component found in parents.", hit.collider.gameObject);
             }
         }
         else
         {
-            // MISS - Draw red line to max distance
             Vector3 endPoint = ray.origin + ray.direction * 100f;
             Debug.DrawLine(ray.origin, endPoint, Color.red, 2f);
-            Debug.Log("Bullet MISSED - no collision detected");
 
             if (fireEffect != null)
             {
@@ -373,7 +351,6 @@ public class Shooter : MonoBehaviour
                 Destroy(fire.gameObject, fire.main.duration);
             }
 
-            // Spawn bullet trail to max distance
             if (bulletTrailPrefab != null)
             {
                 Vector3 endPoint2 = ray.origin + ray.direction * 100f;

@@ -6,6 +6,12 @@ public class PlayerHealth : MonoBehaviour
     private int currentHealth;
     private bool isDead = false;
 
+    [Header("Damage Feedback")]
+    [SerializeField] private CameraShake cameraShake;
+    [SerializeField] private DamageVignette damageVignette;
+    [SerializeField] private AudioClip damageSound;
+    [SerializeField] private AudioSource audioSource;
+
     public int CurrentHealth => currentHealth;
     public int MaxHealth => maxHealth;
     public bool IsDead => isDead;
@@ -13,6 +19,15 @@ public class PlayerHealth : MonoBehaviour
     void Awake()
     {
         currentHealth = maxHealth;
+        
+        if (cameraShake == null)
+            cameraShake = FindObjectOfType<CameraShake>();
+        
+        if (damageVignette == null)
+            damageVignette = FindObjectOfType<DamageVignette>();
+        
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
     }
 
     public void TakeDamage(int amount)
@@ -21,6 +36,15 @@ public class PlayerHealth : MonoBehaviour
         
         currentHealth = Mathf.Max(currentHealth - amount, 0);
         Debug.Log($"Player hit! HP remaining: {currentHealth}");
+        
+        if (cameraShake != null)
+            cameraShake.TriggerShake();
+        
+        if (damageVignette != null)
+            damageVignette.TriggerDamageFlash();
+        
+        if (damageSound != null && audioSource != null)
+            audioSource.PlayOneShot(damageSound);
         
         if (currentHealth <= 0)
         {
@@ -52,6 +76,9 @@ public class PlayerHealth : MonoBehaviour
     {
         isDead = false;
         currentHealth = maxHealth;
+        
+        if (damageVignette != null)
+            damageVignette.ClearVignette();
         
         if (DeathScreen.Instance != null)
         {

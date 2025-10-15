@@ -16,11 +16,38 @@ public class EnemyProjectile : MonoBehaviour
             rb.useGravity = false;
             rb.isKinematic = true; 
         }
+        
+        Physics.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Enemy"));
     }
 
     private void Update()
     {
-        transform.position += transform.forward * speed * Time.deltaTime;
+        RaycastHit hit;
+        Vector3 nextPosition = transform.position + transform.forward * speed * Time.deltaTime;
+        
+        int layerMask = ~LayerMask.GetMask("Enemy", "Weapons");
+        
+        if (Physics.Linecast(transform.position, nextPosition, out hit, layerMask, QueryTriggerInteraction.Ignore))
+        {
+            if (hit.collider.CompareTag("Player"))
+            {
+                var playerHealth = hit.collider.GetComponent<PlayerHealth>();
+                if (playerHealth != null)
+                {
+                    playerHealth.TakeDamage(damage);
+                    Debug.Log($"Enemy projectile hit player for {damage} damage");
+                }
+            }
+            else if (hit.collider.CompareTag("Ground") || hit.collider.CompareTag("Wall"))
+            {
+                Debug.Log($"Enemy projectile hit {hit.collider.tag}: {hit.collider.name}");
+            }
+            
+            Destroy(gameObject);
+            return;
+        }
+        
+        transform.position = nextPosition;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -31,13 +58,14 @@ public class EnemyProjectile : MonoBehaviour
             if (playerHealth != null)
             {
                 playerHealth.TakeDamage(damage);
+                Debug.Log($"Enemy projectile (trigger) hit player for {damage} damage");
             }
             Destroy(gameObject);
         }
-        else if (other.CompareTag("Ground"))
+        else if (other.CompareTag("Ground") || other.CompareTag("Wall"))
         {
+            Debug.Log($"Enemy projectile (trigger) hit {other.tag}: {other.name}");
             Destroy(gameObject);
         }
-        // else: do nothing (projectile keeps going)
     }
 }
