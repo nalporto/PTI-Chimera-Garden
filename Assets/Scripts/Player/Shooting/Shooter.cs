@@ -117,7 +117,7 @@ public class Shooter : MonoBehaviour
             return;
         }
 
-        if (Input.GetMouseButton(0) && Time.time >= nextFireTime)
+        if (Input.GetMouseButton(0) && Time.unscaledTime >= nextFireTime)
         {
             if (currentAmmo <= 0)
             {
@@ -128,7 +128,7 @@ public class Shooter : MonoBehaviour
             else
             {
                 Shoot();
-                nextFireTime = Time.time + fireRate;
+                nextFireTime = Time.unscaledTime + fireRate;
             }
         }
     }
@@ -365,7 +365,7 @@ public class Shooter : MonoBehaviour
     {
         if (hitMarker == null) yield break;
         hitMarker.SetActive(true);
-        yield return new WaitForSeconds(hitMarkerDisplayTime);
+        yield return new WaitForSecondsRealtime(hitMarkerDisplayTime);
         hitMarker.SetActive(false);
     }
 
@@ -376,7 +376,7 @@ public class Shooter : MonoBehaviour
         while (time < 1)
         {
             trail.transform.position = Vector3.Lerp(startPosition, hit.point, time);
-            time += Time.deltaTime / trail.time;
+            time += Time.unscaledDeltaTime / trail.time;
             yield return null;
         }
         trail.transform.position = hit.point;

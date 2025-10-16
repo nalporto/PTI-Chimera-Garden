@@ -26,6 +26,18 @@ public class ClearScreen : MonoBehaviour
     private bool previousCursorVisible;
     private AudioSource musicAudioSource;
     
+    void Update()
+    {
+        if (clearScreenPanel.activeSelf)
+        {
+            if (Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.Return))
+            {
+                Debug.Log("Keyboard shortcut pressed - restarting!");
+                RestartGame();
+            }
+        }
+    }
+    
     void Awake()
     {
         if (Instance == null)
@@ -42,6 +54,11 @@ public class ClearScreen : MonoBehaviour
             if (restartButton != null)
             {
                 restartButton.onClick.AddListener(RestartGame);
+                Debug.Log("RestartGame listener added to button!");
+            }
+            else
+            {
+                Debug.LogError("RestartButton is null in ClearScreen Awake!");
             }
         }
         else
@@ -100,6 +117,7 @@ public class ClearScreen : MonoBehaviour
         if (restartButton != null)
         {
             restartButton.gameObject.SetActive(false);
+            restartButton.interactable = false;
         }
         
         float elapsedTime = 0f;
@@ -130,6 +148,8 @@ public class ClearScreen : MonoBehaviour
         if (restartButton != null)
         {
             restartButton.gameObject.SetActive(true);
+            restartButton.interactable = true;
+            Debug.Log("Restart button activated and set to interactable!");
         }
     }
     
@@ -143,9 +163,16 @@ public class ClearScreen : MonoBehaviour
     
     public void RestartGame()
     {
+        Debug.Log("RestartGame() called!");
+        
+        StopAllCoroutines();
+        
         Time.timeScale = 1f;
+        
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        
+        Debug.Log("Loading scene 'Game'...");
         SceneManager.LoadScene("Game");
     }
     

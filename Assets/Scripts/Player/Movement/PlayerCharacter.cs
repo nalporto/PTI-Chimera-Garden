@@ -705,6 +705,19 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
         return dashCharges;
     }
 
+    public float GetDashRechargeProgress()
+    {
+        if (dashCharges >= maxDashCharges)
+            return 1f;
+        
+        return dashRechargeTimer / dashRechargeTime;
+    }
+
+    public int GetMaxDashCharges()
+    {
+        return maxDashCharges;
+    }
+
     void Start()
     {
         // Hide the capsule mesh from the camera by disabling its MeshRenderer
