@@ -1,0 +1,231 @@
+========================================
+GUIA DE CONFIGURAÇÃO - SISTEMA DE PORTAS TRANCADAS
+========================================
+
+COMPONENTES CRIADOS:
+1. RoomEnemyManager.cs - Gerencia contagem de inimigos na sala
+2. LockedDoorPanel.cs - Painel interativo com 3 estados (vermelho/azul/verde)
+3. InteractPrompt.cs - UI "Pressione F"
+4. DoorAnimation.cs - ATUALIZADO com suporte a lock/unlock
+
+========================================
+PASSO 1: CONFIGURAR OS INIMIGOS
+========================================
+
+1. Certifique-se que TODOS os inimigos tenham a tag "Enemy":
+   - Selecione cada inimigo na hierarquia
+   - No Inspector, configure Tag = "Enemy"
+   - Aplique nos prefabs: Enemy_M, Enemy_R, etc.
+
+========================================
+PASSO 2: CRIAR O ROOM MANAGER
+========================================
+
+1. Para cada sala/área com inimigos, crie um GameObject vazio:
+   Nome: "RoomManager_1" (ou nome da sala)
+   
+2. Adicione o componente RoomEnemyManager:
+   - Add Component > Room Enemy Manager
+   
+3. Configure:
+   - Auto Detect Enemies: ✓ (marcado)
+   - Enemies Parent: Deixe vazio OU arraste o parent dos inimigos (ex: /---IA---)
+   
+4. OPCIONAL - Configure eventos:
+   - OnAllEnemiesKilled: Adicione callbacks customizados se necessário
+
+========================================
+PASSO 3: CRIAR O PAINEL DA PORTA
+========================================
+
+1. Crie um objeto 3D para o painel (Cube ou Cylinder):
+   Nome: "DoorPanel_1"
+   Posição: Próximo à porta
+   Escala: Ex. (0.5, 0.5, 0.1) para painel de parede
+   
+2. Adicione um Material ao painel:
+   - Crie novo material: /Assets/Materials/DoorPanelMat
+   - Configure:
+     * Shader: URP/Lit
+     * Surface Type: Opaque
+     * Emission: ✓ (marcado)
+     * Emission Color: Vermelho inicial
+   
+3. Crie um ponto de interação (GameObject vazio):
+   Nome: "InteractionPoint"
+   Parent: DoorPanel_1
+   Posição: Na frente do painel (onde o player vai ficar)
+
+========================================
+PASSO 4: CONFIGURAR O LOCKED DOOR PANEL
+========================================
+
+1. Adicione LockedDoorPanel ao painel:
+   - Selecione DoorPanel_1
+   - Add Component > Locked Door Panel
+   
+2. Configure as referências:
+   [References]
+   - Room Manager: Arraste RoomManager_1
+   - Door Animation: Arraste o objeto Porta1
+   - Panel Renderer: Arraste o MeshRenderer do painel
+   - Interact Prompt UI: Arraste o Canvas UI (criar no próximo passo)
+   - Interact Text: Arraste o TextMeshPro do prompt
+   
+   [Panel Settings]
+   - Interaction Point: Arraste o InteractionPoint
+   - Interaction Distance: 3
+   - Interact Key: "F"
+   
+   [Panel Colors]
+   - Locked Color: Vermelho (255, 0, 0)
+   - Unlocked Color: Azul (0, 150, 255)
+   - Opened Color: Verde (0, 255, 0)
+   - Material Index: 0
+   
+   [Audio] - OPCIONAL
+   - Audio Source: Add Component > Audio Source
+   - Locked Sound: Arraste som de erro
+   - Unlock Sound: Arraste som de destravar
+   - Open Sound: Arraste som de porta abrindo
+
+========================================
+PASSO 5: CRIAR A UI "PRESSIONE F"
+========================================
+
+1. No Canvas principal (ou crie um novo):
+   - Botão direito > UI > Canvas (se não existir)
+   - Configure Canvas:
+     * Render Mode: Screen Space - Overlay
+     * Canvas Scaler: Scale With Screen Size
+     * Reference Resolution: 1920x1080
+
+2. Crie o Prompt UI:
+   - Botão direito no Canvas > UI > Panel
+   - Nome: "InteractPromptPanel"
+   - Configure RectTransform:
+     * Anchor: Bottom-Center
+     * Pos Y: 200
+     * Width: 300
+     * Height: 80
+   
+3. Adicione o texto:
+   - Botão direito em InteractPromptPanel > UI > Text - TextMeshPro
+   - Nome: "InteractText"
+   - Configure:
+     * Text: "Pressione F"
+     * Font Size: 36
+     * Alignment: Center/Middle
+     * Color: Branco
+     
+4. Adicione o componente InteractPrompt:
+   - Selecione InteractPromptPanel
+   - Add Component > Interact Prompt
+   - Configure:
+     * Prompt Text: Arraste InteractText
+     * Canvas Group: Add Component > Canvas Group (auto-detecta)
+     * Fade Speed: 5
+     * Animate Scale: ✓
+     * Pulse Speed: 2
+     * Pulse Amount: 0.1
+
+5. No LockedDoorPanel:
+   - Interact Prompt UI: Arraste InteractPromptPanel
+   - Interact Text: Arraste InteractText
+
+========================================
+PASSO 6: CONFIGURAR A PORTA
+========================================
+
+1. Selecione a porta (ex: Porta1)
+
+2. Configure o DoorAnimation (já atualizado):
+   - Door Animator: Já configurado
+   - Interaction Distance: 3
+   - Player: Arraste PlayerObj
+   - Interaction Point: Arraste DistanceCheck1 (ou InteractionPoint do painel)
+   - Open Delay: 0
+   - Is Locked: ✓ MARCADO (porta começa trancada)
+
+IMPORTANTE: A porta agora tem suporte a Lock/Unlock!
+
+========================================
+PASSO 7: CONECTAR TUDO
+========================================
+
+No LockedDoorPanel, configure o evento para destrancar a porta quando abrir:
+
+1. Crie um script simples ou use UnityEvents:
+   - Quando o painel muda para "Opened", chame doorAnimation.Unlock()
+
+2. Ou adicione este código ao LockedDoorPanel na linha após "doorAnimation.enabled = true;":
+   
+   var doorScript = doorAnimation.GetComponent<DoorAnimation>();
+   if (doorScript != null)
+       doorScript.Unlock();
+
+========================================
+EXEMPLO DE HIERARQUIA FINAL
+========================================
+
+/---MAP---
+  /Map
+    /RoomManager_1                    [RoomEnemyManager]
+    /ParentDoor1
+      /DoorPanel_1                    [LockedDoorPanel, MeshRenderer]
+        /InteractionPoint
+      /Porta1                         [DoorAnimation, Animator]
+      /DistanceCheck1
+
+/---IA---
+  /Enemy_M                            [Tag: Enemy]
+  /Enemy_R (1)                        [Tag: Enemy]
+  ...
+
+/---UI---
+  /Canvas
+    /InteractPromptPanel              [InteractPrompt, CanvasGroup]
+      /InteractText                   [TextMeshPro]
+
+========================================
+TESTANDO O SISTEMA
+========================================
+
+1. Entre no Play Mode
+2. Vá até a porta - o painel deve estar VERMELHO
+3. Mate todos os inimigos da sala
+4. O painel deve ficar AZUL automaticamente
+5. Aproxime-se do painel - deve aparecer "Pressione F"
+6. Pressione F - o painel fica VERDE e a porta abre
+7. A porta deve abrir automaticamente quando você se aproximar
+
+========================================
+DICAS DE TROUBLESHOOTING
+========================================
+
+PROBLEMA: Painel não muda de cor
+SOLUÇÃO: Verifique se todos os inimigos têm Tag "Enemy"
+
+PROBLEMA: UI não aparece
+SOLUÇÃO: Verifique se InteractPromptPanel está com Alpha 0 inicialmente
+
+PROBLEMA: Porta não abre após interagir
+SOLUÇÃO: Verifique se doorAnimation.isLocked = false no código
+
+PROBLEMA: Inimigos não são contados
+SOLUÇÃO: Verifique a Tag "Enemy" e o Enemies Parent no RoomManager
+
+PROBLEMA: "Pressione F" não some
+SOLUÇÃO: Verifique se InteractPrompt.Hide() está sendo chamado
+
+========================================
+PRÓXIMOS PASSOS
+========================================
+
+1. Repita este setup para cada porta (ParentDoor2, ParentDoor3, etc.)
+2. Crie RoomManagers separados para cada sala
+3. Configure diferentes áreas de inimigos
+4. Ajuste cores e sons conforme seu tema
+5. Adicione feedback visual (partículas) quando destrancar
+
+========================================

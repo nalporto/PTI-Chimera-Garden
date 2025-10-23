@@ -1,0 +1,225 @@
+════════════════════════════════════════════════════════════════
+            ROOM ENEMY DETECTION - SETUP GUIDE
+════════════════════════════════════════════════════════════════
+
+🎯 PROBLEM: RoomEnemyManager was counting ALL enemies in the map!
+
+✅ SOLUTION: Now you have 3 options to define room boundaries:
+
+════════════════════════════════════════════════════════════════
+
+📦 OPTION 1: USE ENEMIES PARENT (RECOMMENDED FOR ORGANIZED SCENES)
+════════════════════════════════════════════════════════════════
+
+Perfect if your enemies are already organized in the hierarchy.
+
+SETUP:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Create an empty GameObject in the room (ex: "Room1_Enemies")
+2. Move all enemies for that room as children of this GameObject:
+
+   Room1_Enemies          ← Parent
+   ├── Enemy_M
+   ├── Enemy_R (1)
+   └── Enemy_R (2)
+
+3. In RoomEnemyManager component:
+   ✓ Auto Detect Enemies: TRUE
+   ✓ Enemies Parent: Drag "Room1_Enemies" here
+   ✓ Room Bounds: Leave empty
+   ✓ Detection Radius: 0
+
+PROS: ✓ Very precise
+      ✓ Easy to organize
+      ✓ No configuration needed
+      
+CONS: ✗ Need to reorganize hierarchy
+
+════════════════════════════════════════════════════════════════
+
+📐 OPTION 2: USE BOX COLLIDER BOUNDS (RECOMMENDED FOR VISUAL SETUP)
+════════════════════════════════════════════════════════════════
+
+Perfect for defining exact room boundaries visually.
+
+SETUP:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Select RoomManager_Enemy_Room1
+2. Add Component → Box Collider
+3. Configure the BoxCollider:
+   ✓ Is Trigger: TRUE (IMPORTANT!)
+   ✓ Center: Position in the middle of the room
+   ✓ Size: Adjust to cover the entire room area
+   
+4. In RoomEnemyManager component:
+   ✓ Auto Detect Enemies: TRUE
+   ✓ Enemies Parent: Leave empty
+   ✓ Room Bounds: Self (auto-filled BoxCollider)
+   ✓ Detection Radius: 0
+
+5. When selected, you'll see a RED transparent box showing room bounds
+
+EXAMPLE VALUES:
+   Center: (0, 0, 0)
+   Size: (50, 10, 30)  ← Adjust based on your room size!
+
+PROS: ✓ Visual feedback
+      ✓ Very flexible
+      ✓ Can be any shape
+      
+CONS: ✗ Need to adjust size manually
+
+════════════════════════════════════════════════════════════════
+
+🎯 OPTION 3: USE DISTANCE RADIUS (QUICK & SIMPLE)
+════════════════════════════════════════════════════════════════
+
+Perfect for quick setup or circular rooms.
+
+SETUP:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Position RoomManager_Enemy_Room1 in the CENTER of the room
+2. In RoomEnemyManager component:
+   ✓ Auto Detect Enemies: TRUE
+   ✓ Enemies Parent: Leave empty
+   ✓ Room Bounds: Leave empty
+   ✓ Detection Radius: 25 (distance from manager position)
+
+3. When selected, you'll see a YELLOW sphere showing detection area
+
+PROS: ✓ Super fast setup
+      ✓ Visual feedback
+      
+CONS: ✗ Only circular area
+      ✗ Less precise for rectangular rooms
+
+════════════════════════════════════════════════════════════════
+
+🔧 RECOMMENDED SETUP FOR YOUR PROJECT
+════════════════════════════════════════════════════════════════
+
+I recommend OPTION 2 (Box Collider) for most cases:
+
+STEP-BY-STEP:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. SELECT: RoomManager_Enemy_Room1
+
+2. ADD COMPONENT: Box Collider
+   ✓ Is Trigger: TRUE ✓
+
+3. POSITION THE MANAGER:
+   - Move RoomManager_Enemy_Room1 to the CENTER of Room 1
+   - Use Scene view to position it
+
+4. ADJUST BOX SIZE:
+   - Select RoomManager_Enemy_Room1
+   - Click "Edit Collider" button in BoxCollider component
+   - Drag the green handles to cover the entire room
+   - Make sure ALL enemies in Room 1 are inside the box
+   - Make sure NO enemies from other rooms are inside
+
+5. IN ROOM ENEMY MANAGER:
+   ✓ Auto Detect Enemies: TRUE
+   ✓ Enemies Parent: (empty)
+   ✓ Room Bounds: Self (BoxCollider)
+   ✓ Detection Radius: 0
+
+6. TEST:
+   - Select RoomManager_Enemy_Room1
+   - You should see a RED transparent box
+   - Verify all Room 1 enemies are INSIDE
+   - Verify other enemies are OUTSIDE
+
+════════════════════════════════════════════════════════════════
+
+🧪 TESTING & VERIFICATION
+════════════════════════════════════════════════════════════════
+
+After setup, test in Play Mode:
+
+1. ▶️ Enter Play Mode
+
+2. 📊 Check Console for:
+   "Room 'RoomManager_Enemy_Room1' has X enemies."
+   
+   ✓ X should be the CORRECT number (ex: 3)
+   ✗ NOT the total map enemies (ex: 12)
+
+3. 🎮 Walk around and kill ONLY enemies in Room 1
+
+4. 📊 Console should show:
+   "Room 'RoomManager_Enemy_Room1' cleared!"
+
+5. ✅ Door panel should turn BLUE
+
+════════════════════════════════════════════════════════════════
+
+⚠️ COMMON ISSUES
+════════════════════════════════════════════════════════════════
+
+❌ STILL COUNTING ALL ENEMIES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CHECK:
+   □ Is "Enemies Parent" empty?
+   □ Is "Room Bounds" assigned to BoxCollider?
+   □ Is BoxCollider size correct?
+   □ Are all room enemies INSIDE the bounds?
+
+❌ NOT COUNTING ANY ENEMIES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CHECK:
+   □ BoxCollider size is too small?
+   □ RoomManager position is wrong?
+   □ Detection Radius is too small?
+   □ Enemies have Tag "Enemy"?
+   □ Enemies have HitReceiver/NavMeshAgent?
+
+❌ COUNTING SOME BUT NOT ALL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CHECK:
+   □ Expand BoxCollider bounds
+   □ Some enemies are outside the room?
+   □ Some enemies are missing components?
+
+════════════════════════════════════════════════════════════════
+
+📊 DEBUG TIPS
+════════════════════════════════════════════════════════════════
+
+VISUAL DEBUG:
+1. Select RoomManager in Scene view
+2. You should see detection bounds (red box or yellow sphere)
+3. Check if enemies are inside/outside visually
+
+CONSOLE DEBUG:
+- "Room 'X' has Y enemies" shows total count
+- If Y is wrong, bounds are incorrect
+
+GIZMOS:
+✓ RED BOX = BoxCollider bounds
+✓ YELLOW SPHERE = Radius detection
+✓ Only visible when RoomManager is selected
+
+════════════════════════════════════════════════════════════════
+
+🎨 PRIORITY SYSTEM
+════════════════════════════════════════════════════════════════
+
+The script checks in this order:
+
+1. ENEMIES PARENT (highest priority)
+   If set → Only count children of this parent
+
+2. ROOM BOUNDS (BoxCollider)
+   If set → Only count enemies inside bounds
+
+3. DETECTION RADIUS
+   If > 0 → Only count enemies within radius
+
+4. NONE
+   If nothing is set → Count NO enemies (returns false)
+
+So you can use ANY option, but ONLY ONE at a time!
+
+════════════════════════════════════════════════════════════════

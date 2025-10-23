@@ -1,0 +1,268 @@
+════════════════════════════════════════════════════════════════
+              DOOR ANIMATION NOT WORKING - DEBUG
+════════════════════════════════════════════════════════════════
+
+🔧 FIXED: LockedDoorPanel.OpenDoor() was calling GetComponent 
+          incorrectly!
+
+✅ NOW: doorAnimation.Unlock() is called directly
+
+════════════════════════════════════════════════════════════════
+
+📋 CONFIGURATION CHECKLIST
+════════════════════════════════════════════════════════════════
+
+SELECT: Porta3 (the door GameObject)
+
+IN DOOR ANIMATION COMPONENT:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ Door Animator: Auto-filled (Animator on same GameObject)
+
+✓ Interaction Distance: 3
+
+✓ Player: PlayerObj
+  (Drag from: /---PLAYER---/PlayerObj)
+
+✓ Interaction Point: DistanceCheck3 OR InteractionPoint
+  (The transform near the door where distance is measured)
+
+✓ Open Delay: 0
+  (Keep at 0 for instant opening)
+
+✓ Is Locked: TRUE ✓ (IMPORTANT - starts locked!)
+
+════════════════════════════════════════════════════════════════
+
+🧪 TEST SEQUENCE
+════════════════════════════════════════════════════════════════
+
+1. ▶️ PLAY MODE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Door should be LOCKED
+   Can't open even if you walk near it
+
+2. ⚔️ KILL ALL ENEMIES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Console should show:
+   ✓ "Room 'RoomManager_Enemy_Room1' cleared!"
+
+3. 🚶 WALK TO PANEL & PRESS F
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Console should show:
+   ✓ "[DoorPanel_ParentDoor3] Door unlocked!"
+   ✓ "[Porta3] Door unlocked! isLocked = False"
+
+4. 🚶 WALK NEAR THE DOOR (< 3 meters)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Console should show:
+   ✓ "[Porta3] Door opening for first time! Distance: 2.34m"
+   
+   Door animation should PLAY!
+
+════════════════════════════════════════════════════════════════
+
+📊 EXPECTED CONSOLE MESSAGES
+════════════════════════════════════════════════════════════════
+
+FULL SEQUENCE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[Start]
+✓ Room 'RoomManager_Enemy_Room1' has 2 enemies.
+✓ [DoorPanel_ParentDoor3] Panel material assigned: ...
+✓ [DoorPanel_ParentDoor3] Connected to RoomManager: ...
+
+[Kill Enemies]
+✓ Room 'RoomManager_Enemy_Room1' cleared!
+✓ [DoorPanel_ParentDoor3] OnRoomCleared called!
+✓ [DoorPanel_ParentDoor3] Panel color updated to BLUE
+
+[Press F at Panel]
+✓ [DoorPanel_ParentDoor3] Door unlocked! DoorAnimation enabled
+✓ [Porta3] Door unlocked! isLocked = False
+✓ [DoorPanel_ParentDoor3] Door opened! Panel state: Opened
+
+[Walk Near Door]
+✓ [Porta3] Door opening for first time! Distance: 2.XX m
+
+════════════════════════════════════════════════════════════════
+
+🔍 TROUBLESHOOTING
+════════════════════════════════════════════════════════════════
+
+❌ DOOR DOESN'T OPEN AFTER PRESSING F
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ISSUE 1: Player reference not set
+
+CHECK:
+   □ Porta3 → DoorAnimation → Player is assigned
+   □ Player is "PlayerObj" (not Camera or other object)
+   
+FIX:
+   Drag /---PLAYER---/PlayerObj to Player field
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ISSUE 2: Interaction Point not set
+
+CHECK:
+   □ Porta3 → DoorAnimation → Interaction Point is assigned
+   
+FIX:
+   Drag DistanceCheck3 or InteractionPoint to field
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ISSUE 3: DoorAnimation not assigned in Panel
+
+CHECK:
+   □ DoorPanel_ParentDoor3 → Door Animation field
+   
+FIX:
+   Drag Porta3 GameObject to Door Animation field
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ISSUE 4: Door stays locked
+
+CHECK Console for:
+   ✓ "[Porta3] Door unlocked! isLocked = False"
+   
+If MISSING:
+   → OpenDoor() wasn't called
+   → Check Door Animation reference in Panel
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ISSUE 5: Door unlocked but won't open when approaching
+
+CHECK:
+   □ Walk VERY CLOSE to Interaction Point (< 3 meters)
+   □ Player field is assigned
+   □ Interaction Point is near the door
+   
+DEBUG:
+   Select Porta3 in Hierarchy
+   Look at Scene view - you'll see a wire sphere
+   Make sure player enters this sphere
+
+FIX:
+   Increase Interaction Distance to 5 or 10
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ISSUE 6: Animation doesn't play
+
+CHECK:
+   □ Porta3 → Animator component exists
+   □ Animator → Controller is assigned ("Porta1.controller")
+   □ Animator is ENABLED
+   
+FIX:
+   Check Animator component has controller assigned
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ISSUE 7: Console shows "Door opening" but no animation
+
+CHECK IN ANIMATOR:
+   □ Select Porta3
+   □ Open Animator window (Window → Animation → Animator)
+   □ Check "IsOpened" parameter exists
+   □ Check parameter is type BOOL
+   □ Check transitions use IsOpened = true condition
+
+FIX:
+   Open Porta1.controller and verify animation setup
+
+════════════════════════════════════════════════════════════════
+
+🎨 VISUAL DEBUG
+════════════════════════════════════════════════════════════════
+
+When Porta3 is SELECTED in Hierarchy:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+You should see a WIRE SPHERE in Scene view around the 
+Interaction Point.
+
+This sphere = interaction range
+
+Player must ENTER this sphere for door to open!
+
+If sphere is too small → Increase Interaction Distance
+
+════════════════════════════════════════════════════════════════
+
+⚙️ COMPONENT OVERVIEW
+════════════════════════════════════════════════════════════════
+
+PORTA3 REQUIRES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Animator component (with Porta1.controller)
+2. DoorAnimation script
+3. References:
+   - Player → PlayerObj
+   - Interaction Point → DistanceCheck3
+   - Door Animator → Self (auto)
+   - Is Locked → TRUE (starts locked)
+
+DOORPANEL REQUIRES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. LockedDoorPanel script
+2. References:
+   - Room Manager → RoomManager_Enemy_Room1
+   - Door Animation → Porta3 (NOT GameObject, the component!)
+   - Panel Renderer → Self (MeshRenderer)
+   - Interact Prompt UI → InteractPrompt
+   - Interact Text → InteractText
+
+════════════════════════════════════════════════════════════════
+
+🔄 HOW IT WORKS
+════════════════════════════════════════════════════════════════
+
+FLOW:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Game starts → Door isLocked = TRUE
+   → Door won't open even if player is near
+
+2. Player kills all enemies
+   → RoomManager fires onAllEnemiesKilled event
+
+3. LockedDoorPanel receives event
+   → Panel turns BLUE
+   → State = Unlocked
+
+4. Player walks to panel
+   → "Pressione F" appears
+
+5. Player presses F
+   → LockedDoorPanel.OpenDoor() called
+   → doorAnimation.Unlock() called
+   → Panel turns GREEN
+
+6. DoorAnimation.isLocked = FALSE
+   → Update() starts checking player distance
+
+7. Player walks near Interaction Point
+   → Distance < 3 meters
+   → Animator.SetBool("IsOpened", true)
+   → Door animation plays!
+
+════════════════════════════════════════════════════════════════
+
+✅ QUICK CHECK
+════════════════════════════════════════════════════════════════
+
+Before testing, verify:
+
+□ Porta3 has Animator with controller
+□ Porta3 → Player = PlayerObj
+□ Porta3 → Interaction Point = DistanceCheck3
+□ Porta3 → Is Locked = TRUE
+□ DoorPanel → Door Animation = Porta3
+□ Console shows unlock messages after pressing F
+□ Walk CLOSE to door (< 3m from Interaction Point)
+
+════════════════════════════════════════════════════════════════

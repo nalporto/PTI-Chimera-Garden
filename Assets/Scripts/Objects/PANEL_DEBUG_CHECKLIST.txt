@@ -1,0 +1,283 @@
+════════════════════════════════════════════════════════════════
+              PANEL NOT WORKING - DEBUG CHECKLIST
+════════════════════════════════════════════════════════════════
+
+🔧 I've added DEBUG LOGGING to help diagnose the issue!
+
+════════════════════════════════════════════════════════════════
+
+📋 STEP 1: ASSIGN ALL REFERENCES IN INSPECTOR
+════════════════════════════════════════════════════════════════
+
+Select: DoorPanel_ParentDoor3
+
+In LockedDoorPanel component, assign these fields:
+
+[References] ⚠️ CRITICAL - MUST BE FILLED!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ Room Manager: RoomManager_Enemy_Room1
+  (Drag from Hierarchy: /---MAP---/Map/RoomManager_Enemy_Room1)
+
+✓ Door Animation: Porta3
+  (Drag from Hierarchy: /---MAP---/Map/ParentDoor3/Porta3)
+
+✓ Panel Renderer: (Auto-filled from self - MeshRenderer)
+  (If empty, drag the DoorPanel_ParentDoor3 itself)
+
+✓ Interact Prompt UI: InteractPrompt
+  (Drag from Hierarchy: /---UI---/Canvas/InteractPrompt)
+
+✓ Interact Text: InteractText
+  (Drag from Hierarchy: /---UI---/Canvas/InteractPrompt/InteractText)
+
+[Panel Settings]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ Interaction Point: InteractionPoint
+  (Drag from Hierarchy: .../DoorPanel_ParentDoor3/InteractionPoint)
+
+✓ Interaction Distance: 3
+
+✓ Interact Key: F
+
+[Panel Colors]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ Locked Color: RED (255, 0, 0, 255)
+
+✓ Unlocked Color: BLUE (0, 150, 255, 255)
+
+✓ Opened Color: GREEN (0, 255, 0, 255)
+
+✓ Material Index: 0
+  (Try 0, 1, or 2 if panel has multiple materials)
+
+════════════════════════════════════════════════════════════════
+
+📊 STEP 2: CHECK CONSOLE MESSAGES
+════════════════════════════════════════════════════════════════
+
+After entering Play Mode, look for these messages:
+
+✅ GOOD MESSAGES (System working):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ "Room 'RoomManager_Enemy_Room1' has 2 enemies."
+✓ "[DoorPanel_ParentDoor3] Panel material assigned: ..."
+✓ "[DoorPanel_ParentDoor3] Connected to RoomManager: ..."
+✓ "[DoorPanel_ParentDoor3] Initial state: Locked, Color: ..."
+✓ "[DoorPanel_ParentDoor3] InteractPrompt UI hidden initially"
+
+When you kill all enemies:
+✓ "Room 'RoomManager_Enemy_Room1' cleared!"
+✓ "[DoorPanel_ParentDoor3] OnRoomCleared called! ..."
+✓ "[DoorPanel_ParentDoor3] Panel color updated to ..."
+
+When you approach:
+✓ "[DoorPanel_ParentDoor3] Showing interact prompt ..."
+
+❌ BAD MESSAGES (Need to fix):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✗ "Room Manager not assigned!"
+  → Fix: Assign RoomManager in Inspector
+
+✗ "Panel Renderer is null!"
+  → Fix: Assign MeshRenderer in Inspector
+
+✗ "InteractPrompt UI not assigned!"
+  → Fix: Assign InteractPrompt GameObject in Inspector
+
+✗ "Cannot update color - panelMaterial is null!"
+  → Fix: Check Material Index or Panel Renderer
+
+✗ "Material index X out of range!"
+  → Fix: Set Material Index to 0 or check how many materials
+
+════════════════════════════════════════════════════════════════
+
+🧪 STEP 3: TEST SEQUENCE
+════════════════════════════════════════════════════════════════
+
+1. ▶️ ENTER PLAY MODE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Check Console for startup messages
+   Panel should be RED (or whatever color you set)
+
+2. 📊 OPEN CONSOLE WINDOW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Window → General → Console
+   Look for ERROR or WARNING messages in red/yellow
+
+3. ⚔️ KILL ALL ENEMIES IN ROOM 1
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Console should show:
+   ✓ "Room 'RoomManager_Enemy_Room1' cleared!"
+   ✓ "[DoorPanel_ParentDoor3] OnRoomCleared called!"
+   ✓ "[DoorPanel_ParentDoor3] Panel color updated to BLUE"
+
+4. 🎨 CHECK PANEL COLOR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Look at the panel in Scene/Game view
+   
+   If NO COLOR CHANGE:
+   → Check Console for "Cannot update color" message
+   → Try different Material Index (0, 1, or 2)
+   → Check if material supports _BaseColor property
+
+5. 🚶 WALK CLOSE TO PANEL (< 3 meters)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Console should show:
+   ✓ "[DoorPanel_ParentDoor3] Showing interact prompt"
+   
+   UI "Pressione F" should appear
+   
+   If UI DOESN'T APPEAR:
+   → Check Console for "InteractPrompt UI not assigned"
+   → Check InteractPrompt Canvas Group Alpha = 0 initially
+   → Check InteractPrompt GameObject is enabled
+   → Check Canvas is in Screen Space - Overlay mode
+
+6. ⌨️ PRESS F KEY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Panel should turn GREEN
+   Door should unlock
+
+════════════════════════════════════════════════════════════════
+
+🔍 COMMON ISSUES & FIXES
+════════════════════════════════════════════════════════════════
+
+❌ ISSUE: Panel color doesn't change at all
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CAUSE: Material doesn't support _BaseColor property
+       (Might be using different shader)
+
+FIX:
+1. Select the panel material in Project
+2. Check Shader - should be "Universal Render Pipeline/Lit"
+3. OR try Material Index 1 or 2 instead of 0
+4. OR manually create new URP/Lit material
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ ISSUE: "Room cleared!" shows but panel stays RED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CAUSE: OnRoomCleared() not being called
+
+FIX:
+1. Check Console for "OnRoomCleared called!" message
+2. If missing → Room Manager not assigned
+3. Verify RoomManager.onAllEnemiesKilled has listener
+4. Check RoomManager Unity Event in Inspector
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ ISSUE: UI "Pressione F" never appears
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CAUSE 1: Interact Prompt UI not assigned
+
+FIX 1:
+   Assign InteractPrompt in Inspector
+
+CAUSE 2: InteractPrompt is disabled in Hierarchy
+
+FIX 2:
+   Enable InteractPrompt GameObject
+
+CAUSE 3: Canvas Group alpha not set correctly
+
+FIX 3:
+   Select InteractPrompt
+   Canvas Group → Alpha = 0
+   Make sure InteractPrompt script is enabled
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ ISSUE: UI appears but stays visible always
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CAUSE: InteractPrompt not hiding on Start
+
+FIX:
+   Check InteractPrompt → Canvas Group → Alpha = 0
+   Or set InteractPrompt GameObject to inactive initially
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ ISSUE: Nothing happens when pressing F
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CAUSE: Player not close enough OR panel not unlocked
+
+FIX:
+   1. Get within 3 meters of InteractionPoint
+   2. Make sure panel is BLUE (unlocked)
+   3. Check Console for "Showing interact prompt"
+
+════════════════════════════════════════════════════════════════
+
+🛠️ MATERIAL INDEX TROUBLESHOOTING
+════════════════════════════════════════════════════════════════
+
+If panel color isn't changing, the material might be at a 
+different index:
+
+TEST DIFFERENT INDICES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Select DoorPanel_ParentDoor3
+2. Look at MeshRenderer → Materials
+3. Count how many materials (ex: 3 materials)
+4. In LockedDoorPanel:
+   - Try Material Index: 0
+   - Try Material Index: 1
+   - Try Material Index: 2
+5. Enter Play Mode and see which one changes color
+
+CONSOLE WILL TELL YOU:
+"Material index X out of range! Only Y materials."
+→ If you see this, use index 0 to Y-1
+
+════════════════════════════════════════════════════════════════
+
+📞 QUICK DEBUG CHECKLIST
+════════════════════════════════════════════════════════════════
+
+Before asking for help, verify:
+
+□ All references in LockedDoorPanel are assigned
+□ RoomManager has BoxCollider with enemies inside
+□ Console shows "Room 'X' has Y enemies" on start
+□ Console shows "Room 'X' cleared!" when enemies die
+□ Console shows "OnRoomCleared called!" message
+□ Console shows NO ERROR or WARNING messages
+□ InteractPrompt GameObject exists and is enabled
+□ Canvas Group is attached to InteractPrompt
+□ PlayerObj has Tag "Player"
+□ Material Index is correct (0, 1, or 2)
+
+════════════════════════════════════════════════════════════════
+
+✅ IF EVERYTHING IS CORRECT
+════════════════════════════════════════════════════════════════
+
+You should see in Console:
+
+[Start]
+✓ Room 'RoomManager_Enemy_Room1' has 2 enemies.
+✓ [DoorPanel_ParentDoor3] Panel material assigned: Material_Name
+✓ [DoorPanel_ParentDoor3] Connected to RoomManager: RoomManager_Enemy_Room1
+✓ [DoorPanel_ParentDoor3] Initial state: Locked, Color: RGBA(1.000, 0.000, 0.000, 1.000)
+✓ [DoorPanel_ParentDoor3] InteractPrompt UI hidden initially
+
+[After Killing Enemies]
+✓ Room 'RoomManager_Enemy_Room1' cleared!
+✓ [DoorPanel_ParentDoor3] OnRoomCleared called! Current state: Locked
+✓ [DoorPanel_ParentDoor3] Panel color updated to RGBA(0.000, 0.588, 1.000, 1.000) (State: Unlocked)
+
+[When Approaching]
+✓ [DoorPanel_ParentDoor3] Showing interact prompt (playerInRange: True, state: Unlocked)
+
+[When Pressing F]
+✓ [DoorPanel_ParentDoor3] Panel color updated to RGBA(0.000, 1.000, 0.000, 1.000) (State: Opened)
+✓ Door 'DoorPanel_ParentDoor3' opened!
+
+════════════════════════════════════════════════════════════════
+
+Copy the Console messages and check which step is missing!
+
+════════════════════════════════════════════════════════════════
