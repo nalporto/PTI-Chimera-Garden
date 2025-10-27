@@ -1,0 +1,162 @@
+════════════════════════════════════════════════════════════════
+              🎮 MAIN MENU - QUICK REFERENCE CARD
+════════════════════════════════════════════════════════════════
+
+📋 SCRIPTS CREATED:
+════════════════════════════════════════════════════════════════
+
+1. MainMenuManager.cs
+   - Manages scene transitions
+   - Controls panel visibility
+   - Handles Play, Config, Exit, Back buttons
+
+2. ConfigManager.cs
+   - Manages sensitivity & volume settings
+   - Saves/loads PlayerPrefs
+   - Updates UI sliders and values
+
+3. MenuButton.cs
+   - Hover effects (scale + color change)
+   - Click animation
+   - Optional sound effects
+
+════════════════════════════════════════════════════════════════
+
+🎨 COLOR PALETTE (COPY-PASTE READY)
+════════════════════════════════════════════════════════════════
+
+Background:          R:18  G:25  B:30  A:255
+Title Text:          R:240 G:235 B:220 A:255
+Button Background:   R:242 G:242 B:230 A:255
+Button Text:         R:20  G:20  B:20  A:255
+Config Panel BG:     R:30  G:35  B:45  A:250
+Slider Background:   R:50  G:55  B:65  A:255
+Slider Fill (Green): R:100 G:200 B:100 A:255
+Slider Fill (Blue):  R:100 G:150 B:200 A:255
+
+════════════════════════════════════════════════════════════════
+
+📐 BUTTON POSITIONS
+════════════════════════════════════════════════════════════════
+
+All buttons: Width 400, Height 80, Anchor Center
+
+PlayButton:   X:0   Y:50   (top)
+ConfigButton: X:0   Y:-50  (middle)
+ExitButton:   X:0   Y:-150 (bottom)
+
+Spacing: 100 pixels between buttons
+
+════════════════════════════════════════════════════════════════
+
+🎯 KEY SETTINGS
+════════════════════════════════════════════════════════════════
+
+Canvas:
+- Render Mode: Screen Space - Overlay
+- Canvas Scaler → UI Scale Mode: Scale With Screen Size
+- Reference Resolution: 1920 x 1080
+
+Sensitivity Slider:
+- Min: 1, Max: 10, Default: 5
+
+Volume Slider:
+- Min: 0, Max: 1, Default: 0.8
+
+════════════════════════════════════════════════════════════════
+
+🔗 HOW TO USE IN YOUR GAME CODE
+════════════════════════════════════════════════════════════════
+
+To get saved sensitivity in your player controller:
+
+```csharp
+float sensitivity = ConfigManager.GetSensitivity();
+// Use this for camera rotation, mouse look, etc.
+```
+
+To get saved volume:
+
+```csharp
+float volume = ConfigManager.GetVolume();
+// AudioListener.volume is set automatically
+```
+
+════════════════════════════════════════════════════════════════
+
+⚡ TESTING CHECKLIST
+════════════════════════════════════════════════════════════════
+
+□ MainMenuPanel is ACTIVE initially
+□ ConfigPanel is INACTIVE initially
+□ All buttons have onClick events assigned
+□ MenuManager has both panels assigned
+□ ConfigManager has all sliders assigned
+□ Game scene name matches in MainMenuManager
+□ Both scenes added to Build Settings
+□ MainMenu is scene index 0
+
+════════════════════════════════════════════════════════════════
+
+🐛 COMMON ISSUES
+════════════════════════════════════════════════════════════════
+
+"Play button doesn't work"
+→ Check Game Scene Name in MainMenuManager
+→ Make sure Game scene is in Build Settings
+
+"Sliders don't update values"
+→ Check references in ConfigManager
+→ Make sure Value Text objects are assigned
+
+"Config panel stays visible"
+→ Set ConfigPanel inactive in Hierarchy initially
+→ MainMenuPanel should be active
+
+"Buttons don't scale on hover"
+→ Make sure EventSystem exists in scene
+→ Check MenuButton script is attached
+
+════════════════════════════════════════════════════════════════
+
+📝 CUSTOMIZATION TIPS
+════════════════════════════════════════════════════════════════
+
+Change button spacing:
+- Select buttons, adjust Y positions
+- Keep equal spacing for balance
+
+Add your logo:
+- Import logo as Sprite
+- Create UI → Image
+- Position above title
+
+Change fonts:
+- Import custom font (.ttf or .otf)
+- Window → TextMeshPro → Font Asset Creator
+- Assign to text objects
+
+Add more settings:
+- Duplicate slider structure
+- Add new slider to ConfigManager script
+- Wire up OnValueChanged event
+
+════════════════════════════════════════════════════════════════
+
+🚀 QUICK START (5 MINUTES)
+════════════════════════════════════════════════════════════════
+
+1. Create new scene "MainMenu"
+2. Create Canvas + Background (RGB 18,25,30)
+3. Add title text "CHIMERA\nGARDEN"
+4. Create 3 buttons: PLAY, CONFIG, EXIT
+5. Create ConfigPanel with 2 sliders
+6. Add MenuManager empty GameObject
+7. Assign all references
+8. Connect button events
+9. Make ConfigPanel inactive
+10. Test!
+
+Full guide: MENU_SETUP_GUIDE.txt
+
+════════════════════════════════════════════════════════════════

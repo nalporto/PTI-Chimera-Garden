@@ -12,7 +12,7 @@ public class LockedDoorPanel : MonoBehaviour
     
     [Header("References")]
     [SerializeField] private RoomEnemyManager roomManager;
-    [SerializeField] private DoorAnimation doorAnimation;
+    [SerializeField] private Animator doorAnimator;
     [SerializeField] private MeshRenderer panelRenderer;
     [SerializeField] private GameObject interactPromptUI;
     [SerializeField] private TextMeshProUGUI interactText;
@@ -190,18 +190,18 @@ public class LockedDoorPanel : MonoBehaviour
         UpdatePanelState();
         PlaySound(openSound);
         
-        if (doorAnimation != null)
+        if (doorAnimator != null)
         {
-            doorAnimation.enabled = true;
-            doorAnimation.Unlock();
-            Debug.Log($"[{gameObject.name}] Door unlocked! DoorAnimation enabled and unlocked.");
+            doorAnimator.SetBool("IsOpened", true);
+            doorAnimator.SetBool("IsLocked", false);
+            Debug.Log($"[{gameObject.name}] Door opened! IsOpened=true, IsLocked=false");
         }
         else
         {
-            Debug.LogError($"[{gameObject.name}] Cannot open door - DoorAnimation not assigned!");
+            Debug.LogError($"[{gameObject.name}] Cannot open door - Door Animator not assigned!");
         }
         
-        Debug.Log($"[{gameObject.name}] Door opened! Panel state: {currentState}");
+        Debug.Log($"[{gameObject.name}] Panel interaction complete. Door should stay open.");
     }
     
     private void UpdatePanelState()

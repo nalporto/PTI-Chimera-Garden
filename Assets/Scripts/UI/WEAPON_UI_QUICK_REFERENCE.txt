@@ -1,0 +1,230 @@
+════════════════════════════════════════════════════════════════
+           🔫 WEAPON UI - QUICK REFERENCE CARD
+════════════════════════════════════════════════════════════════
+
+📋 VISUAL LAYOUT
+════════════════════════════════════════════════════════════════
+
+Bottom-Left Corner (matches your reference sketch):
+
+┌────────────────────────────────────┐ ◄ Orange border (2px)
+│ CURRENT WEAPON                     │ ◄ Gray text (20pt)
+├────────────────────────────────────┤ ◄ Orange divider
+│                                    │
+│        🔫 SMG                      │ ◄ Weapon sprite
+│                                    │
+│ ████████░░░░        12 / 30        │ ◄ Bullets + ammo text
+└────────────────────────────────────┘
+  ▲ Orange corner accent
+
+════════════════════════════════════════════════════════════════
+
+🎨 COLOR PALETTE (COPY-PASTE)
+════════════════════════════════════════════════════════════════
+
+Main Orange:       R:255 G:165 B:51  A:255  #FFA533
+Low Ammo Red:      R:255 G:51  B:51  A:255  #FF3333
+Empty Bullet:      R:76  G:76  B:76  A:255  #4C4C4C
+Panel BG:          R:20  G:25  B:30  A:200  #141E1E
+Border Orange:     R:255 G:165 B:51  A:255  #FFA533
+Weapon Name:       R:200 G:200 B:200 A:255  #C8C8C8
+
+These match your existing health/energy bars!
+
+════════════════════════════════════════════════════════════════
+
+📐 POSITIONS & SIZES
+════════════════════════════════════════════════════════════════
+
+WeaponDisplayPanel:
+- Anchor: Bottom-Left
+- Position: X:20, Y:120
+- Size: 320 x 140
+
+WeaponNameText:
+- Position: X:15, Y:-15 (from top-left)
+- Size: 200 x 30
+- Font: 20pt Bold
+
+WeaponIcon:
+- Position: X:140, Y:10 (from center-left)
+- Size: 160 x 80
+
+AmmoCountText:
+- Position: X:-15, Y:10 (from bottom-right)
+- Size: 120 x 35
+- Font: 28pt Bold
+
+BulletIconsContainer:
+- Position: X:15, Y:10 (from bottom-left)
+- Size: 280 x 35
+
+BulletIconPrefab:
+- Size: 8 x 20 (thin vertical rectangle)
+- Spacing: 3px between bullets
+
+════════════════════════════════════════════════════════════════
+
+🔗 SCRIPT REFERENCES TO ASSIGN
+════════════════════════════════════════════════════════════════
+
+WeaponDisplayUI component on WeaponDisplayPanel:
+
+[Required References]
+✓ Weapon Switching → /---PLAYER---/Cam/WeaponHolder
+✓ Weapon Icon Image → WeaponIcon (Image component)
+✓ Weapon Name Text → WeaponNameText (TMP component)
+✓ Ammo Count Text → AmmoCountText (TMP component)
+✓ Bullet Icons Container → BulletIconsContainer (Transform)
+✓ Bullet Icon Prefab → /Assets/Prefabs/UI/BulletIconPrefab
+
+[Weapon Data Array]
+Size: 3
+- Element 0: Name "PISTOL", Icon (sprite)
+- Element 1: Name "SMG", Icon (sprite)
+- Element 2: Name "SHOTGUN", Icon (sprite)
+
+[Visual Settings]
+- Normal Ammo Color: RGB(255, 165, 51)
+- Low Ammo Color: RGB(255, 51, 51)
+- Empty Bullet Color: RGB(76, 76, 76)
+- Low Ammo Threshold: 3
+- Max Bullet Icons: 30
+
+════════════════════════════════════════════════════════════════
+
+📦 COMPONENT STRUCTURE
+════════════════════════════════════════════════════════════════
+
+WeaponDisplayPanel
+├─ [Components]
+│  ├─ RectTransform
+│  ├─ CanvasRenderer
+│  ├─ Image (background)
+│  ├─ Outline (border - optional)
+│  └─ WeaponDisplayUI (main script)
+│
+├─ WeaponNameText [TextMeshProUGUI]
+├─ Divider [Image]
+├─ WeaponIcon [Image]
+├─ BulletIconsContainer [HorizontalLayoutGroup]
+│  └─ (Bullet icons spawned by script)
+├─ AmmoCountText [TextMeshProUGUI]
+└─ CornerAccent [Image] (optional)
+
+════════════════════════════════════════════════════════════════
+
+⚙️ BULLET ICON PREFAB SETUP
+════════════════════════════════════════════════════════════════
+
+1. Create UI Image in BulletIconsContainer
+2. Name: "BulletIconPrefab"
+3. Size: 8 x 20
+4. Color: RGB(255, 165, 51)
+5. Add Layout Element component:
+   - Min Width: 8
+   - Min Height: 20
+6. Drag to /Assets/Prefabs/UI/ folder
+7. Delete from Hierarchy
+8. Assign to WeaponDisplayUI script
+
+════════════════════════════════════════════════════════════════
+
+🧪 TESTING CHECKLIST
+════════════════════════════════════════════════════════════════
+
+□ Panel appears in bottom-left corner
+□ Weapon name shows (PISTOL/SMG/SHOTGUN)
+□ Bullet icons display horizontally
+□ Filled bullets are orange
+□ Empty bullets are dark gray
+□ Ammo count text shows "X / Y"
+□ Text turns red when ammo ≤ 3
+□ Switching weapons updates display
+□ Firing decreases bullet icons
+□ Reloading refills bullet icons
+□ Panel animates on weapon switch
+
+════════════════════════════════════════════════════════════════
+
+🎯 FEATURES
+════════════════════════════════════════════════════════════════
+
+✓ Matches your reference sketch exactly
+✓ Fits your existing UI color scheme
+✓ Visual bullet counter (████████░░░░)
+✓ Current weapon name display
+✓ Weapon icon/sprite support
+✓ Ammo count text (XX / XX)
+✓ Low ammo warning (red color)
+✓ Smooth weapon switch animation
+✓ Scales for different magazine sizes
+✓ Clean, professional design
+
+════════════════════════════════════════════════════════════════
+
+💡 QUICK TIPS
+════════════════════════════════════════════════════════════════
+
+WEAPON SPRITES:
+- Size: 256x128 pixels recommended
+- Format: PNG with transparency
+- Style: White/light silhouette on transparent
+- Import as: Sprite (2D and UI)
+
+BULLET LAYOUT:
+- Horizontal Layout Group auto-arranges bullets
+- Spacing of 3px creates clean look
+- Max 30 bullets prevents overflow
+
+LOW AMMO WARNING:
+- Threshold of 3 creates urgency
+- Text turns red automatically
+- Bullets stay orange (only text changes)
+
+ANIMATION:
+- Smooth fade on weapon switch
+- Slight scale effect for polish
+- Speed of 5 feels responsive
+
+════════════════════════════════════════════════════════════════
+
+🐛 COMMON ISSUES & FIXES
+════════════════════════════════════════════════════════════════
+
+"No bullets showing"
+→ Check Bullet Icon Prefab is assigned
+→ Make sure prefab exists in /Assets/Prefabs/UI/
+
+"Weapon name wrong"
+→ Check weapon names in Weapon Data array
+→ Names should match: PISTOL, SMG, SHOTGUN
+
+"Icon not showing"
+→ Import sprites as "Sprite (2D and UI)"
+→ Assign to Weapon Data array
+
+"Bullets stacked vertically"
+→ Add Horizontal Layout Group to container
+→ Set Child Alignment: Middle Left
+
+"Text not updating"
+→ Check WeaponSwitching reference assigned
+→ Path: /---PLAYER---/Cam/WeaponHolder
+
+════════════════════════════════════════════════════════════════
+
+🚀 5-MINUTE SETUP
+════════════════════════════════════════════════════════════════
+
+1. Create Panel (320x140) at bottom-left
+2. Add 4 UI elements: name text, icon, bullets container, ammo text
+3. Create bullet prefab (8x20) → save to /Prefabs/UI/
+4. Add WeaponDisplayUI script to panel
+5. Assign 6 references + weapon data
+6. Set colors: Orange RGB(255,165,51)
+7. Test!
+
+Full guide: WEAPON_UI_SETUP_GUIDE.txt
+
+════════════════════════════════════════════════════════════════

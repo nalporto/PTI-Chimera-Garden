@@ -1,0 +1,579 @@
+════════════════════════════════════════════════════════════════
+          🔫 WEAPON DISPLAY UI - COMPLETE SETUP GUIDE
+════════════════════════════════════════════════════════════════
+
+📋 WHAT YOU'LL CREATE:
+
+✓ Stylized weapon panel in bottom-left corner
+✓ Current weapon name display
+✓ Weapon icon/sprite (2D)
+✓ Bullet icons showing current ammo visually
+✓ Ammo count text (XX / XX)
+✓ Matches your existing UI style (orange/blue theme)
+✓ Smooth weapon switch animation
+
+════════════════════════════════════════════════════════════════
+
+🎨 MATCHING YOUR EXISTING UI STYLE
+════════════════════════════════════════════════════════════════
+
+Your current UI uses:
+- Orange/yellow accents: RGB(255, 165, 51) or #FFA533
+- Blue accents: RGB(51, 153, 255) or #3399FF
+- Red health: RGB(255, 51, 51) or #FF3333
+- Dark backgrounds with borders
+- Clean, minimalist design
+
+════════════════════════════════════════════════════════════════
+
+STEP 1: CREATE WEAPON UI PANEL
+════════════════════════════════════════════════════════════════
+
+1. LOCATE YOUR CANVAS:
+   Hierarchy → /---UI---/Canvas
+
+2. CREATE PANEL:
+   Right-click Canvas → UI → Panel
+   
+   NAME: WeaponDisplayPanel
+
+3. RECT TRANSFORM:
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Anchor: Bottom-Left
+   Pivot: X: 0, Y: 0
+   Pos X: 20
+   Pos Y: 120
+   Width: 320
+   Height: 140
+
+4. IMAGE COMPONENT (Background):
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Color: RGBA(20, 25, 30, 200)  # Dark semi-transparent
+   
+   OR match your health bar background color
+
+5. ADD OUTLINE (Optional but recommended):
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Add Component → UI → Outline
+   Effect Color: RGB(255, 165, 51) - Orange
+   Effect Distance: X: 2, Y: -2
+   
+   This creates the border shown in your sketch!
+
+════════════════════════════════════════════════════════════════
+
+STEP 2: CREATE WEAPON NAME TEXT
+════════════════════════════════════════════════════════════════
+
+RIGHT-CLICK ON WEAPONDISPLAYPANEL → UI → Text - TextMeshPro
+
+NAME: WeaponNameText
+
+RECT TRANSFORM:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Anchor: Top-Left
+Pivot: X: 0, Y: 1
+Pos X: 15
+Pos Y: -15
+Width: 200
+Height: 30
+
+TEXT SETTINGS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Text: "CURRENT WEAPON"
+Font: Liberation Sans SDF (or your preferred font)
+Font Style: Bold
+Font Size: 20
+Color: RGB(200, 200, 200) - Light gray
+Alignment: Left & Top
+
+Extra Settings:
+- Character Spacing: 2 (slightly spaced for style)
+
+════════════════════════════════════════════════════════════════
+
+STEP 3: CREATE WEAPON ICON DISPLAY
+════════════════════════════════════════════════════════════════
+
+RIGHT-CLICK ON WEAPONDISPLAYPANEL → UI → Image
+
+NAME: WeaponIcon
+
+RECT TRANSFORM:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Anchor: Center-Left
+Pivot: X: 0, Y: 0.5
+Pos X: 140
+Pos Y: 10
+Width: 160
+Height: 80
+
+IMAGE SETTINGS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Source Image: (Will be set by script)
+Color: White
+Preserve Aspect: TRUE (keep weapon proportions)
+Raycast Target: OFF
+
+TIP: This will show a 2D sprite of the weapon!
+
+════════════════════════════════════════════════════════════════
+
+STEP 4: CREATE AMMO COUNT TEXT
+════════════════════════════════════════════════════════════════
+
+RIGHT-CLICK ON WEAPONDISPLAYPANEL → UI → Text - TextMeshPro
+
+NAME: AmmoCountText
+
+RECT TRANSFORM:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Anchor: Bottom-Right
+Pivot: X: 1, Y: 0
+Pos X: -15
+Pos Y: 10
+Width: 120
+Height: 35
+
+TEXT SETTINGS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Text: "12 / 30"
+Font Style: Bold
+Font Size: 28
+Color: RGB(255, 165, 51) - Orange (matches your existing UI!)
+Alignment: Right & Bottom
+
+Extra Settings:
+- Enable "Outline"
+  - Outline Color: Black
+  - Outline Thickness: 0.2
+
+════════════════════════════════════════════════════════════════
+
+STEP 5: CREATE BULLET ICONS CONTAINER
+════════════════════════════════════════════════════════════════
+
+RIGHT-CLICK ON WEAPONDISPLAYPANEL → Create Empty
+
+NAME: BulletIconsContainer
+
+RECT TRANSFORM:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Anchor: Bottom-Left
+Pivot: X: 0, Y: 0
+Pos X: 15
+Pos Y: 10
+Width: 280
+Height: 35
+
+ADD LAYOUT COMPONENT:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Add Component → UI → Horizontal Layout Group
+
+Settings:
+- Child Alignment: Middle Left
+- Child Controls Size: Width ✓, Height ✓
+- Child Force Expand: Width ✗, Height ✗
+- Spacing: 3
+- Padding: Left 0, Right 0, Top 0, Bottom 0
+
+════════════════════════════════════════════════════════════════
+
+STEP 6: CREATE BULLET ICON PREFAB
+════════════════════════════════════════════════════════════════
+
+RIGHT-CLICK ON BULLETICONSCONTAINER → UI → Image
+
+NAME: BulletIconPrefab
+
+RECT TRANSFORM:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Width: 8
+Height: 20
+
+IMAGE SETTINGS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Source Image: UI/Skin/UISprite (default white square)
+Image Type: Simple
+Color: RGB(255, 165, 51) - Orange
+
+ADD LAYOUT ELEMENT:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Add Component → UI → Layout Element
+- Min Width: 8
+- Min Height: 20
+- Preferred Width: 8
+- Preferred Height: 20
+
+IMPORTANT: MAKE IT A PREFAB
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Create folder: /Assets/Prefabs/UI (if doesn't exist)
+2. Drag "BulletIconPrefab" from Hierarchy to /Assets/Prefabs/UI
+3. DELETE the original from Hierarchy
+   (Script will spawn them dynamically)
+
+════════════════════════════════════════════════════════════════
+
+STEP 7: ADD WEAPONDISPLAYUI SCRIPT
+════════════════════════════════════════════════════════════════
+
+1. SELECT WEAPONDISPLAYPANEL
+
+2. ADD COMPONENT:
+   Add Component → WeaponDisplayUI script
+
+3. ASSIGN REFERENCES:
+   
+   [References]
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Weapon Switching: Drag from /---PLAYER---/Cam/WeaponHolder
+   Weapon Icon Image: Drag "WeaponIcon" from Hierarchy
+   Weapon Name Text: Drag "WeaponNameText" from Hierarchy
+   Ammo Count Text: Drag "AmmoCountText" from Hierarchy
+   Bullet Icons Container: Drag "BulletIconsContainer" from Hierarchy
+   Bullet Icon Prefab: Drag from /Assets/Prefabs/UI/BulletIconPrefab
+   
+   [Weapon Data]
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Size: 3 (for PISTOL, SMG, SHOTGUN)
+   
+   Element 0:
+   - Weapon Name: "PISTOL"
+   - Weapon Icon: (Import pistol sprite - see STEP 8)
+   
+   Element 1:
+   - Weapon Name: "SMG"
+   - Weapon Icon: (Import SMG sprite - see STEP 8)
+   
+   Element 2:
+   - Weapon Name: "SHOTGUN"
+   - Weapon Icon: (Import shotgun sprite - see STEP 8)
+   
+   [Visual Settings]
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Normal Ammo Color: RGB(255, 165, 51) - Orange
+   Low Ammo Color: RGB(255, 51, 51) - Red
+   Empty Bullet Color: RGB(76, 76, 76) - Dark gray
+   Low Ammo Threshold: 3
+   Max Bullet Icons: 30
+   
+   [Animation]
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Weapon Switch Anim Speed: 5
+   Ammo Update Anim Speed: 10
+
+════════════════════════════════════════════════════════════════
+
+STEP 8: CREATE/IMPORT WEAPON SPRITES
+════════════════════════════════════════════════════════════════
+
+You need 2D weapon icons for the display!
+
+OPTION 1: CREATE SIMPLE SPRITES IN UNITY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Create new Texture in image editor (256x128 pixels)
+2. Draw simple weapon silhouette (white on transparent)
+3. Save as PNG
+4. Import to /Assets/Textures/UI/WeaponIcons/
+5. Select texture → Inspector:
+   - Texture Type: Sprite (2D and UI)
+   - Sprite Mode: Single
+   - Apply
+
+OPTION 2: USE EXISTING 3D WEAPON MODELS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Open Game scene
+2. Position weapon in front of camera
+3. Use "Game" view to capture screenshot
+4. Crop in image editor to weapon only
+5. Make background transparent
+6. Save as sprite and import
+
+OPTION 3: DOWNLOAD FREE WEAPON ICONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Search for:
+- "Free weapon icons pack"
+- "FPS weapon sprites"
+- "Gun silhouettes PNG"
+
+Make sure they're royalty-free!
+
+QUICK PLACEHOLDER (FOR TESTING):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Use Unity's default "UISprite" temporarily
+The weapon icon will show as a white rectangle
+You can add real sprites later!
+
+════════════════════════════════════════════════════════════════
+
+STEP 9: POLISH THE VISUAL DESIGN
+════════════════════════════════════════════════════════════════
+
+ADD DIVIDER LINE (Optional but stylish):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Right-click WeaponDisplayPanel → UI → Image
+
+NAME: Divider
+
+Rect Transform:
+- Anchor: Middle-Center
+- Pos X: 0, Pos Y: 55
+- Width: 290, Height: 2
+
+Image:
+- Color: RGB(255, 165, 51, 100) - Semi-transparent orange
+
+This separates weapon name from ammo display!
+
+ADD CORNER ACCENT (Optional):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Right-click WeaponDisplayPanel → UI → Image
+
+NAME: CornerAccent
+
+Rect Transform:
+- Anchor: Bottom-Left
+- Pivot: X: 0, Y: 0
+- Pos X: 0, Pos Y: 0
+- Width: 20, Height: 20
+
+Image:
+- Color: RGB(255, 165, 51) - Orange solid
+
+This adds a small orange square in corner for style!
+
+════════════════════════════════════════════════════════════════
+
+STEP 10: OPTIONAL - HIDE OLD AMMO UI
+════════════════════════════════════════════════════════════════
+
+Since you now have a fancy weapon display, you may want to:
+
+1. SELECT: /---UI---/Canvas/AmmoUI
+2. In Inspector, DISABLE the GameObject
+   (or delete it if you don't need it)
+
+OR keep both - one is simple text, one is stylized panel!
+
+════════════════════════════════════════════════════════════════
+
+🎨 FINAL VISUAL HIERARCHY
+════════════════════════════════════════════════════════════════
+
+Canvas
+└── WeaponDisplayPanel (Panel with outline)
+    ├── WeaponNameText (TMP - "CURRENT WEAPON")
+    ├── Divider (Image - horizontal line)
+    ├── WeaponIcon (Image - weapon sprite)
+    ├── BulletIconsContainer (Empty with Horizontal Layout)
+    │   └── (Bullet icons spawned by script)
+    ├── AmmoCountText (TMP - "12 / 30")
+    └── CornerAccent (Image - orange square)
+
+WeaponDisplayUI Script attached to WeaponDisplayPanel
+
+════════════════════════════════════════════════════════════════
+
+🧪 TESTING
+════════════════════════════════════════════════════════════════
+
+▶️ ENTER PLAY MODE
+
+EXPECTED RESULT:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+┌──────────────────────────────────────┐ ← Orange border
+│ CURRENT WEAPON                       │
+├──────────────────────────────────────┤ ← Divider line
+│                                      │
+│         🔫 (Weapon Icon)             │
+│                                      │
+│ ████████░░░░          12 / 30        │ ← Orange bullets & text
+└──────────────────────────────────────┘
+
+✓ Weapon name shows (PISTOL/SMG/SHOTGUN)
+✓ Weapon icon displays (if sprites assigned)
+✓ Bullet icons show current ammo (filled = orange, empty = gray)
+✓ Ammo count text shows "X / Y"
+✓ When ammo ≤ 3, text turns RED
+✓ When switching weapons, panel animates (slight scale)
+
+WEAPON SWITCH TEST:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Press 1/2/3 to switch weapons
+→ Panel briefly shrinks then expands
+→ Weapon name changes
+→ Weapon icon changes
+→ Bullet count updates
+→ Ammo text updates
+
+FIRING TEST:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Fire your weapon
+→ Bullet icons turn gray from right to left
+→ Ammo count decreases
+→ When ≤ 3 bullets, text turns RED
+
+RELOAD TEST:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Press R to reload
+→ Bullet icons refill (gray → orange)
+→ Ammo count resets to max
+→ Text color returns to orange
+
+════════════════════════════════════════════════════════════════
+
+🎨 COLOR REFERENCE (MATCHING YOUR UI)
+════════════════════════════════════════════════════════════════
+
+Main Orange (Ammo):    RGB(255, 165, 51)   or #FFA533
+Low Ammo Red:          RGB(255, 51, 51)    or #FF3333
+Empty Bullet Gray:     RGB(76, 76, 76)     or #4C4C4C
+Panel Background:      RGB(20, 25, 30)     or #141E1E
+Panel Border:          RGB(255, 165, 51)   or #FFA533
+Weapon Name:           RGB(200, 200, 200)  or #C8C8C8
+
+These match your existing health/energy UI perfectly!
+
+════════════════════════════════════════════════════════════════
+
+🔧 TROUBLESHOOTING
+════════════════════════════════════════════════════════════════
+
+❌ NO BULLETS SHOWING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CHECK:
+□ Bullet Icon Prefab is assigned in WeaponDisplayUI
+□ Prefab exists in /Assets/Prefabs/UI/
+□ Prefab has Image component
+□ Bullet Icons Container is assigned
+
+FIX:
+Recreate prefab following STEP 6
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ WEAPON NAME SHOWS "NO WEAPON"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CHECK:
+□ WeaponSwitching reference assigned
+□ Path is /---PLAYER---/Cam/WeaponHolder
+□ Weapons have Shooter component
+
+FIX:
+Assign correct WeaponSwitching reference
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ WEAPON ICON BLANK/INVISIBLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CHECK:
+□ Weapon sprites imported as Sprite (2D and UI)
+□ Weapon Data array filled in WeaponDisplayUI
+□ Weapon names match GameObject names
+
+FIX:
+1. Import weapon sprites (see STEP 8)
+2. Assign to Weapon Data array
+3. Match weapon names exactly
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ AMMO COUNT SHOWS "-- / --"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CHECK:
+□ Current weapon has Shooter component
+□ Shooter has CurrentAmmo and MagSize properties
+
+This is expected if no weapon equipped!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ BULLETS NOT LAID OUT HORIZONTALLY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CHECK:
+□ BulletIconsContainer has Horizontal Layout Group
+□ Child Alignment: Middle Left
+□ Spacing: 3
+
+FIX:
+Add Horizontal Layout Group component (see STEP 5)
+
+════════════════════════════════════════════════════════════════
+
+💡 CUSTOMIZATION IDEAS
+════════════════════════════════════════════════════════════════
+
+1. CHANGE BULLET ICON SHAPE:
+   - Edit prefab to use custom sprite
+   - Try circles, diamonds, or actual bullet shapes
+
+2. ADD GLOW EFFECT:
+   - Add component to bullets: UI → Shadow
+   - Color: Orange with offset 0,0 for glow
+
+3. ANIMATE WEAPON SWITCH:
+   - Add Animator to panel
+   - Create slide-in animation
+
+4. ADD WEAPON STATS:
+   - Add text for damage, fire rate, etc.
+   - Show below weapon name
+
+5. ADD RESERVE AMMO:
+   - Show total ammo available
+   - Display as "12 / 30 | 120"
+
+6. COLOR CODE BY WEAPON TYPE:
+   - Pistol: Blue bullets
+   - SMG: Yellow bullets
+   - Shotgun: Red bullets
+
+7. ADD SOUND EFFECTS:
+   - Play sound on low ammo
+   - Play sound on weapon switch
+
+════════════════════════════════════════════════════════════════
+
+⚡ QUICK SETUP (5 MINUTES)
+════════════════════════════════════════════════════════════════
+
+1. Create WeaponDisplayPanel in Canvas (bottom-left)
+2. Add WeaponNameText, WeaponIcon, AmmoCountText
+3. Create BulletIconsContainer with Horizontal Layout
+4. Create BulletIconPrefab → Save to /Assets/Prefabs/UI/
+5. Add WeaponDisplayUI script to panel
+6. Assign all references
+7. Set colors: Orange RGB(255,165,51)
+8. Test in Play Mode!
+
+Full details in steps above ⬆️
+
+════════════════════════════════════════════════════════════════
+
+✅ DONE! YOU NOW HAVE:
+════════════════════════════════════════════════════════════════
+
+✓ Professional weapon UI matching your game style
+✓ Visual bullet counter (like your reference image)
+✓ Dynamic weapon name & icon display
+✓ Color-coded ammo warning (red when low)
+✓ Smooth weapon switch animation
+✓ Clean, stylized design fitting your existing UI
+✓ Expandable system for more weapons
+
+════════════════════════════════════════════════════════════════

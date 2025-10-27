@@ -1,0 +1,624 @@
+════════════════════════════════════════════════════════════════
+           🎮 MAIN MENU SYSTEM - COMPLETE SETUP GUIDE
+════════════════════════════════════════════════════════════════
+
+📋 WHAT YOU'LL CREATE:
+
+✓ Main Menu Scene with title logo
+✓ PLAY button → Loads game scene
+✓ CONFIG button → Opens settings panel
+✓ EXIT button → Quits game
+✓ Config panel with Sensitivity & Volume sliders
+✓ Stylized background matching your game
+✓ Animated interactive buttons
+
+════════════════════════════════════════════════════════════════
+
+STEP 1: CREATE MENU SCENE
+════════════════════════════════════════════════════════════════
+
+1. File → New Scene
+2. File → Save As
+3. Name: "MainMenu"
+4. Save to: /Assets/Scenes/MainMenu.unity
+
+5. Delete "Main Camera" (we'll use UI Camera)
+
+════════════════════════════════════════════════════════════════
+
+STEP 2: CREATE CANVAS & EVENT SYSTEM
+════════════════════════════════════════════════════════════════
+
+RIGHT-CLICK IN HIERARCHY:
+
+1. UI → Canvas
+
+2. Select Canvas:
+   Render Mode: Screen Space - Overlay
+   Canvas Scaler:
+   - UI Scale Mode: Scale With Screen Size
+   - Reference Resolution: 1920 x 1080
+   - Match: 0.5 (balance between width and height)
+
+3. Right-click Hierarchy → UI → Event System (if not auto-created)
+
+════════════════════════════════════════════════════════════════
+
+STEP 3: CREATE BACKGROUND
+════════════════════════════════════════════════════════════════
+
+RIGHT-CLICK ON CANVAS → UI → Image
+
+NAME: Background
+
+SETTINGS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Anchor: Stretch all (Alt+Click bottom-right preset)
+Left/Right/Top/Bottom: 0
+
+Color: Choose ONE that fits your game:
+
+🌑 DARK MYSTERIOUS:     RGB(20, 25, 35) or #141923
+🌿 DARK GARDEN:         RGB(15, 30, 25) or #0F1E19
+🌌 DEEP PURPLE:         RGB(25, 20, 40) or #191428
+⚡ DARK TECH:           RGB(18, 22, 30) or #12161E
+🔥 DARK RED:            RGB(30, 15, 15) or #1E0F0F
+
+RECOMMENDED: RGB(18, 25, 30) - Dark blue-gray
+
+════════════════════════════════════════════════════════════════
+
+STEP 4: CREATE TITLE "CHIMERA GARDEN"
+════════════════════════════════════════════════════════════════
+
+RIGHT-CLICK ON CANVAS → UI → Text - TextMeshPro
+
+If prompted to "Import TMP Essentials", click "Import TMP Essentials"
+
+NAME: TitleText
+
+RECT TRANSFORM:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Anchor: Top-Center
+Pos X: 0
+Pos Y: -150
+Width: 800
+Height: 200
+
+TEXT SETTINGS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Text: CHIMERA
+      GARDEN
+
+Font: Liberation Sans SDF (default TMP font)
+Font Style: Bold
+Font Size: 80
+Alignment: Center (horizontal & vertical)
+
+Color: RGB(240, 235, 220) - Cream/off-white
+
+Extra Settings (optional):
+- Enable "Outline"
+  - Outline Color: Black or dark gray
+  - Outline Thickness: 0.2
+
+════════════════════════════════════════════════════════════════
+
+STEP 5: CREATE MAIN MENU PANEL
+════════════════════════════════════════════════════════════════
+
+RIGHT-CLICK ON CANVAS → UI → Panel
+
+NAME: MainMenuPanel
+
+SETTINGS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Anchor: Center
+Pos X: 0
+Pos Y: 0
+Width: 1920
+Height: 1080
+
+Image Component:
+- Remove Image component OR set Color Alpha to 0
+  (We want transparent panel, background does the work)
+
+════════════════════════════════════════════════════════════════
+
+STEP 6: CREATE BUTTONS (PLAY, CONFIG, EXIT)
+════════════════════════════════════════════════════════════════
+
+RIGHT-CLICK ON MAINMENUPANEL → UI → Button - TextMeshPro
+
+CREATE 3 BUTTONS WITH THESE SETTINGS:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BUTTON 1: PlayButton
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Rect Transform:
+- Anchor: Center
+- Pos X: 0
+- Pos Y: 50
+- Width: 400
+- Height: 80
+
+Button (Image) Component:
+- Color: RGB(242, 242, 230) - Light cream
+
+Child Text (TMP):
+- Text: "PLAY"
+- Font Size: 48
+- Font Style: Bold
+- Color: RGB(20, 20, 20) - Very dark gray/black
+- Alignment: Center
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BUTTON 2: ConfigButton
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Rect Transform:
+- Anchor: Center
+- Pos X: 0
+- Pos Y: -50
+- Width: 400
+- Height: 80
+
+Button (Image) Component:
+- Color: RGB(242, 242, 230)
+
+Child Text (TMP):
+- Text: "CONFIG"
+- Font Size: 48
+- Font Style: Bold
+- Color: RGB(20, 20, 20)
+- Alignment: Center
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BUTTON 3: ExitButton
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Rect Transform:
+- Anchor: Center
+- Pos X: 0
+- Pos Y: -150
+- Width: 400
+- Height: 80
+
+Button (Image) Component:
+- Color: RGB(242, 242, 230)
+
+Child Text (TMP):
+- Text: "EXIT"
+- Font Size: 48
+- Font Style: Bold
+- Color: RGB(20, 20, 20)
+- Alignment: Center
+
+════════════════════════════════════════════════════════════════
+
+STEP 7: ADD MENUBUTTON SCRIPT TO BUTTONS
+════════════════════════════════════════════════════════════════
+
+FOR EACH BUTTON (PlayButton, ConfigButton, ExitButton):
+
+1. Select the button
+2. Add Component → MenuButton script
+3. Leave default settings (handles hover effects automatically)
+
+OPTIONAL: Create custom colors per button
+- Play button: Greenish tint
+- Exit button: Reddish tint
+
+════════════════════════════════════════════════════════════════
+
+STEP 8: CREATE CONFIG PANEL
+════════════════════════════════════════════════════════════════
+
+RIGHT-CLICK ON CANVAS → UI → Panel
+
+NAME: ConfigPanel
+
+SETTINGS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Anchor: Center
+Pos X: 0
+Pos Y: 0
+Width: 800
+Height: 600
+
+Image Component:
+- Color: RGB(30, 35, 45) - Slightly lighter than background
+- Alpha: 250 (mostly opaque)
+
+════════════════════════════════════════════════════════════════
+
+STEP 9: ADD CONFIG PANEL TITLE
+════════════════════════════════════════════════════════════════
+
+RIGHT-CLICK ON CONFIGPANEL → UI → Text - TextMeshPro
+
+NAME: ConfigTitle
+
+SETTINGS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Rect Transform:
+- Anchor: Top-Center
+- Pos X: 0
+- Pos Y: -40
+- Width: 600
+- Height: 80
+
+Text Settings:
+- Text: "CONFIGURAÇÕES" or "SETTINGS"
+- Font Size: 56
+- Font Style: Bold
+- Color: RGB(240, 235, 220)
+- Alignment: Center
+
+════════════════════════════════════════════════════════════════
+
+STEP 10: CREATE SENSITIVITY SLIDER
+════════════════════════════════════════════════════════════════
+
+RIGHT-CLICK ON CONFIGPANEL → UI → Slider
+
+NAME: SensitivitySlider
+
+RECT TRANSFORM:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Anchor: Top-Center
+Pos X: 0
+Pos Y: -180
+Width: 600
+Height: 30
+
+SLIDER SETTINGS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Min Value: 1
+Max Value: 10
+Whole Numbers: OFF
+Value: 5
+
+CUSTOMIZE SLIDER VISUALS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Select "Background" child:
+- Image Color: RGB(50, 55, 65) - Dark gray
+
+Select "Fill" child (inside Fill Area):
+- Image Color: RGB(100, 200, 100) - Green
+
+Select "Handle" child (inside Handle Slide Area):
+- Image Color: RGB(240, 235, 220) - Cream
+
+════════════════════════════════════════════════════════════════
+
+STEP 11: ADD SENSITIVITY LABEL
+════════════════════════════════════════════════════════════════
+
+RIGHT-CLICK ON CONFIGPANEL → UI → Text - TextMeshPro
+
+NAME: SensitivityLabel
+
+SETTINGS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Rect Transform:
+- Anchor: Top-Center
+- Pos X: -220
+- Pos Y: -150
+- Width: 200
+- Height: 40
+
+Text Settings:
+- Text: "Sensibilidade:" or "Sensitivity:"
+- Font Size: 28
+- Color: RGB(240, 235, 220)
+- Alignment: Left & Middle
+
+════════════════════════════════════════════════════════════════
+
+STEP 12: ADD SENSITIVITY VALUE TEXT
+════════════════════════════════════════════════════════════════
+
+RIGHT-CLICK ON CONFIGPANEL → UI → Text - TextMeshPro
+
+NAME: SensitivityValue
+
+SETTINGS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Rect Transform:
+- Anchor: Top-Center
+- Pos X: 220
+- Pos Y: -150
+- Width: 100
+- Height: 40
+
+Text Settings:
+- Text: "5.0"
+- Font Size: 28
+- Color: RGB(100, 200, 100) - Green
+- Alignment: Right & Middle
+
+════════════════════════════════════════════════════════════════
+
+STEP 13: CREATE VOLUME SLIDER
+════════════════════════════════════════════════════════════════
+
+RIGHT-CLICK ON CONFIGPANEL → UI → Slider
+
+NAME: VolumeSlider
+
+RECT TRANSFORM:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Anchor: Top-Center
+Pos X: 0
+Pos Y: -280
+Width: 600
+Height: 30
+
+SLIDER SETTINGS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Min Value: 0
+Max Value: 1
+Whole Numbers: OFF
+Value: 0.8
+
+CUSTOMIZE SLIDER VISUALS (same as sensitivity):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Background: RGB(50, 55, 65)
+Fill: RGB(100, 150, 200) - Blue
+Handle: RGB(240, 235, 220)
+
+════════════════════════════════════════════════════════════════
+
+STEP 14: ADD VOLUME LABEL & VALUE
+════════════════════════════════════════════════════════════════
+
+CREATE TWO TEXT OBJECTS (same as sensitivity):
+
+VolumeLabel:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Pos X: -220, Pos Y: -250
+- Text: "Volume:" or "Som:"
+- Alignment: Left & Middle
+
+VolumeValue:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Pos X: 220, Pos Y: -250
+- Text: "80%"
+- Color: RGB(100, 150, 200) - Blue
+- Alignment: Right & Middle
+
+════════════════════════════════════════════════════════════════
+
+STEP 15: CREATE BACK BUTTON
+════════════════════════════════════════════════════════════════
+
+RIGHT-CLICK ON CONFIGPANEL → UI → Button - TextMeshPro
+
+NAME: BackButton
+
+SETTINGS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Rect Transform:
+- Anchor: Bottom-Center
+- Pos X: 0
+- Pos Y: 40
+- Width: 300
+- Height: 70
+
+Button Image:
+- Color: RGB(242, 242, 230)
+
+Child Text:
+- Text: "VOLTAR" or "BACK"
+- Font Size: 40
+- Font Style: Bold
+- Color: RGB(20, 20, 20)
+
+Add Component → MenuButton script
+
+════════════════════════════════════════════════════════════════
+
+STEP 16: SETUP MENU MANAGER
+════════════════════════════════════════════════════════════════
+
+1. CREATE EMPTY GAMEOBJECT IN HIERARCHY:
+   Right-click Hierarchy → Create Empty
+   Name: MenuManager
+
+2. ADD SCRIPT:
+   Add Component → MainMenuManager
+
+3. ASSIGN REFERENCES:
+   
+   Main Menu Panel: Drag "MainMenuPanel" from Hierarchy
+   Config Panel: Drag "ConfigPanel" from Hierarchy
+   Game Scene Name: "Game" (or your game scene name)
+
+════════════════════════════════════════════════════════════════
+
+STEP 17: SETUP CONFIG MANAGER
+════════════════════════════════════════════════════════════════
+
+1. SELECT CONFIGPANEL
+
+2. ADD SCRIPT:
+   Add Component → ConfigManager
+
+3. ASSIGN REFERENCES:
+   
+   [Sensitivity]
+   - Sensitivity Slider: Drag "SensitivitySlider"
+   - Sensitivity Value Text: Drag "SensitivityValue"
+   - Default Sensitivity: 5
+   - Min Sensitivity: 1
+   - Max Sensitivity: 10
+   
+   [Volume]
+   - Volume Slider: Drag "VolumeSlider"
+   - Volume Value Text: Drag "VolumeValue"
+   - Default Volume: 0.8
+
+════════════════════════════════════════════════════════════════
+
+STEP 18: CONNECT BUTTON EVENTS
+════════════════════════════════════════════════════════════════
+
+SELECT PLAYBUTTON:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+In Button component → OnClick():
+1. Click "+"
+2. Drag "MenuManager" to object field
+3. Function: MainMenuManager → OnPlayButton()
+
+SELECT CONFIGBUTTON:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+In Button component → OnClick():
+1. Click "+"
+2. Drag "MenuManager" to object field
+3. Function: MainMenuManager → OnConfigButton()
+
+SELECT EXITBUTTON:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+In Button component → OnClick():
+1. Click "+"
+2. Drag "MenuManager" to object field
+3. Function: MainMenuManager → OnExitButton()
+
+SELECT BACKBUTTON (in ConfigPanel):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+In Button component → OnClick():
+1. Click "+"
+2. Drag "MenuManager" to object field
+3. Function: MainMenuManager → OnBackButton()
+
+════════════════════════════════════════════════════════════════
+
+STEP 19: INITIAL PANEL VISIBILITY
+════════════════════════════════════════════════════════════════
+
+IMPORTANT: Set initial state
+
+1. SELECT MAINMENUPANEL:
+   ✓ Make sure it's ACTIVE (checkbox checked)
+
+2. SELECT CONFIGPANEL:
+   ✗ Make sure it's INACTIVE (checkbox unchecked)
+   
+This ensures main menu shows first!
+
+════════════════════════════════════════════════════════════════
+
+STEP 20: ADD MENU SCENE TO BUILD SETTINGS
+════════════════════════════════════════════════════════════════
+
+1. File → Build Settings
+
+2. Click "Add Open Scenes" (with MainMenu scene open)
+
+3. DRAG MainMenu scene to TOP of the list (Scene 0)
+
+4. Make sure "Game" scene is also in the list
+
+5. Close Build Settings
+
+════════════════════════════════════════════════════════════════
+
+STEP 21: TEST THE MENU
+════════════════════════════════════════════════════════════════
+
+▶️ PRESS PLAY
+
+TEST CHECKLIST:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+□ Main menu shows with title "CHIMERA GARDEN"
+□ Three buttons visible: PLAY, CONFIG, EXIT
+□ Buttons scale up when hovering
+□ Click CONFIG → Opens config panel
+□ Sensitivity slider works (1-10)
+□ Volume slider works (0-100%)
+□ Values update as you drag sliders
+□ Click BACK → Returns to main menu
+□ Click EXIT → Exits play mode
+
+════════════════════════════════════════════════════════════════
+
+🎨 VISUAL HIERARCHY (FINAL)
+════════════════════════════════════════════════════════════════
+
+Canvas
+├── Background (Image - dark color)
+├── TitleText (TMP - "CHIMERA GARDEN")
+├── MainMenuPanel
+│   ├── PlayButton (Button + MenuButton + TMP "PLAY")
+│   ├── ConfigButton (Button + MenuButton + TMP "CONFIG")
+│   └── ExitButton (Button + MenuButton + TMP "EXIT")
+├── ConfigPanel (inactive initially)
+│   ├── ConfigTitle (TMP - "CONFIGURAÇÕES")
+│   ├── SensitivityLabel (TMP)
+│   ├── SensitivitySlider (Slider)
+│   ├── SensitivityValue (TMP)
+│   ├── VolumeLabel (TMP)
+│   ├── VolumeSlider (Slider)
+│   ├── VolumeValue (TMP)
+│   └── BackButton (Button + MenuButton + TMP "VOLTAR")
+└── MenuManager (Empty with MainMenuManager script)
+
+EventSystem (auto-created)
+
+════════════════════════════════════════════════════════════════
+
+🎨 RECOMMENDED COLOR PALETTE
+════════════════════════════════════════════════════════════════
+
+Background:          RGB(18, 25, 30) - Dark blue-gray
+Title Text:          RGB(240, 235, 220) - Cream
+Button Background:   RGB(242, 242, 230) - Light cream
+Button Text:         RGB(20, 20, 20) - Very dark
+Button Hover:        RGB(255, 217, 102) - Golden yellow
+Config Panel BG:     RGB(30, 35, 45) - Slightly lighter
+Slider Background:   RGB(50, 55, 65) - Dark gray
+Slider Fill Green:   RGB(100, 200, 100)
+Slider Fill Blue:    RGB(100, 150, 200)
+Slider Handle:       RGB(240, 235, 220) - Cream
+
+════════════════════════════════════════════════════════════════
+
+💡 OPTIONAL ENHANCEMENTS
+════════════════════════════════════════════════════════════════
+
+1. ADD LOGO IMAGE:
+   - Import your logo as sprite
+   - UI → Image above title text
+   - Adjust size and position
+
+2. ADD BACKGROUND IMAGE/PATTERN:
+   - Import texture
+   - Set as Background sprite
+   - Adjust color/alpha
+
+3. ADD SOUND EFFECTS:
+   - Create AudioClips for hover/click
+   - Assign to MenuButton components
+
+4. ADD ANIMATIONS:
+   - Create Animator for buttons
+   - Add fade-in animation for panels
+
+5. ADD MORE SETTINGS:
+   - Graphics quality dropdown
+   - Resolution dropdown
+   - Fullscreen toggle
+
+════════════════════════════════════════════════════════════════
+
+✅ DONE! YOU NOW HAVE:
+════════════════════════════════════════════════════════════════
+
+✓ Professional main menu
+✓ Functional config panel
+✓ Sensitivity settings (saved between sessions)
+✓ Volume control (saved between sessions)
+✓ Interactive animated buttons
+✓ Scene loading system
+✓ Exit functionality
+
+════════════════════════════════════════════════════════════════

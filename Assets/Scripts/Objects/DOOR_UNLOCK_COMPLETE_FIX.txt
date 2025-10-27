@@ -1,0 +1,368 @@
+════════════════════════════════════════════════════════════════
+            🚪 DOOR NOT OPENING AFTER UNLOCK - FIX
+════════════════════════════════════════════════════════════════
+
+✅ ENHANCED DEBUG LOGGING ADDED!
+
+The DoorAnimation script now has:
+- Auto-detection of Player and Animator
+- Comprehensive startup logging
+- Visual gizmos showing interaction range in Scene view
+- Distance display when door is selected
+
+════════════════════════════════════════════════════════════════
+
+📋 COMPLETE SETUP CHECKLIST
+════════════════════════════════════════════════════════════════
+
+STEP 1: SELECT PORTA3 IN HIERARCHY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Path: /---MAP---/Map/ParentDoor3/Porta3
+
+════════════════════════════════════════════════════════════════
+
+STEP 2: CONFIGURE DOORANIMATION COMPONENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[Required Fields]
+
+┌─────────────────────────────────────────────────────────────┐
+│ ⚠️  Door Animator                                            │
+│     (Auto-fills if empty)                                   │
+│     Should show: Animator (Animator)                        │
+├─────────────────────────────────────────────────────────────┤
+│ ⚠️  Player                                                   │
+│     Drag: /---PLAYER---/PlayerObj                           │
+│     (Or leave empty - will auto-find Tag "Player")          │
+├─────────────────────────────────────────────────────────────┤
+│ ⚠️  Interaction Point                                        │
+│     Drag: /---MAP---/Map/ParentDoor3/DistanceCheck3         │
+│     CRITICAL: This MUST be assigned!                        │
+├─────────────────────────────────────────────────────────────┤
+│    Interaction Distance: 3                                  │
+│     (Distance in meters for auto-open)                      │
+├─────────────────────────────────────────────────────────────┤
+│    Open Delay: 0                                            │
+│     (0 = instant, 1 = wait 1 second)                        │
+├─────────────────────────────────────────────────────────────┤
+│ ✓  Is Locked: TRUE                                          │
+│     MUST be checked initially!                              │
+└─────────────────────────────────────────────────────────────┘
+
+════════════════════════════════════════════════════════════════
+
+STEP 3: CONFIGURE DOORPANEL COMPONENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Select: /---MAP---/Map/ParentDoor3/DoorPanel_ParentDoor3
+
+[References]
+
+┌─────────────────────────────────────────────────────────────┐
+│ ⚠️  Room Manager                                             │
+│     Drag: RoomManager_Enemy_Room1                           │
+├─────────────────────────────────────────────────────────────┤
+│ ⚠️  Door Animation                                           │
+│     Drag: Porta3 GameObject                                 │
+│     (The script will find the DoorAnimation component)      │
+├─────────────────────────────────────────────────────────────┤
+│    Panel Renderer                                           │
+│     (Auto-fills from self)                                  │
+├─────────────────────────────────────────────────────────────┤
+│    Interact Prompt UI                                       │
+│     Drag: /---UI---/Canvas/InteractPrompt                   │
+├─────────────────────────────────────────────────────────────┤
+│    Interact Text                                            │
+│     Drag: /---UI---/Canvas/InteractPrompt/InteractText      │
+└─────────────────────────────────────────────────────────────┘
+
+════════════════════════════════════════════════════════════════
+
+🧪 TESTING PROCEDURE
+════════════════════════════════════════════════════════════════
+
+TEST 1: ENTER PLAY MODE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+▶️ Click Play
+
+📊 CHECK CONSOLE - Should show:
+
+✅ [Porta3] DoorAnimation initialized:
+✅   - Player: PlayerObj
+✅   - Interaction Point: DistanceCheck3
+✅   - Door Animator: Assigned
+✅   - Is Locked: True
+✅   - Interaction Distance: 3m
+
+❌ IF YOU SEE ERRORS:
+
+   "Player not found!" 
+   → PlayerObj doesn't have Tag "Player"
+   → Fix: Select PlayerObj → Tag dropdown → Player
+
+   "Interaction Point: NULL"
+   → Not assigned in Inspector
+   → Fix: Drag DistanceCheck3 to Interaction Point field
+
+   "Door Animator: NULL"
+   → Animator component missing
+   → Fix: Add Animator component to Porta3
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TEST 2: WALK NEAR DOOR (BEFORE UNLOCK)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚶 Walk close to the door
+
+✅ EXPECTED: Door stays CLOSED (because isLocked = true)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TEST 3: KILL ALL ENEMIES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚔️ Eliminate all enemies in the room
+
+📊 CHECK CONSOLE:
+
+✅ Room 'RoomManager_Enemy_Room1' cleared!
+✅ [DoorPanel_ParentDoor3] OnRoomCleared called!
+✅ [DoorPanel_ParentDoor3] Panel color updated to BLUE
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TEST 4: INTERACT WITH PANEL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚶 Walk to the panel (< 3m)
+👀 "Pressione F" should appear
+⌨️  Press F key
+
+📊 CHECK CONSOLE:
+
+✅ [DoorPanel_ParentDoor3] Door unlocked! DoorAnimation enabled
+✅ [Porta3] Door unlocked! isLocked = False
+✅ [Porta3] Player: PlayerObj, InteractionPoint: DistanceCheck3
+
+❌ IF "InteractionPoint: NULL":
+   → The Interaction Point field wasn't assigned!
+   → EXIT PLAY MODE
+   → Select Porta3 → Assign DistanceCheck3
+   → Try again
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TEST 5: APPROACH THE DOOR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚶 Walk CLOSE to DistanceCheck3 position
+
+📊 CHECK CONSOLE:
+
+✅ [Porta3] Door opening for first time! Distance: 2.34m, isLocked: False
+
+🚪 Door animation should PLAY!
+
+════════════════════════════════════════════════════════════════
+
+🎨 VISUAL DEBUG (NEW!)
+════════════════════════════════════════════════════════════════
+
+DURING PLAY MODE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Click on Porta3 in Hierarchy (while game is running)
+
+2. Look at Scene view (not Game view)
+
+3. You will see:
+
+   🔴 RED SPHERE = Door is LOCKED (won't open)
+   🟢 GREEN SPHERE = Door is UNLOCKED (can open)
+   
+   SPHERE SIZE = Interaction distance (3 meters)
+   
+   🟡 YELLOW LINE = Player is OUT OF RANGE
+   🔵 CYAN LINE = Player is IN RANGE
+   
+   TEXT ABOVE DOOR shows:
+   - Distance: 2.45m
+   - IN RANGE / OUT OF RANGE
+   - Locked: True / False
+
+4. Walk your character toward the door
+
+5. Watch the distance number decrease
+
+6. When distance < 3.0m, line turns CYAN = door should open!
+
+════════════════════════════════════════════════════════════════
+
+🔍 COMMON ISSUES & SOLUTIONS
+════════════════════════════════════════════════════════════════
+
+ISSUE 1: "Cannot update door - Player or InteractionPoint is null!"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CAUSE: Missing references
+
+FIX:
+1. Exit Play Mode
+2. Select Porta3
+3. DoorAnimation component:
+   - Player: Drag PlayerObj
+   - Interaction Point: Drag DistanceCheck3
+4. Enter Play Mode again
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ISSUE 2: Door unlocks but doesn't open when approaching
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CAUSE A: Player not close enough
+
+DEBUG:
+   1. During Play Mode, select Porta3
+   2. Look at Scene view
+   3. Check the distance number
+   4. Walk until distance < 3.0m
+
+FIX:
+   - Walk CLOSER to DistanceCheck3
+   - OR increase Interaction Distance to 5 or 10
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CAUSE B: Interaction Point in wrong location
+
+DEBUG:
+   1. Exit Play Mode
+   2. Select DistanceCheck3 in Hierarchy
+   3. Move it CLOSE to the door
+   4. Should be where player stands to enter
+
+FIX:
+   Move DistanceCheck3 to the front of the door
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ISSUE 3: "Door opening for first time!" but no animation
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CAUSE: Animator issue
+
+FIX:
+1. Select Porta3
+2. Check Animator component:
+   ✓ Enabled
+   ✓ Controller = "Porta1.controller"
+3. Open Animator window (Window → Animation → Animator)
+4. Verify "IsOpened" bool parameter exists
+5. Check that transitions use IsOpened = true
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ISSUE 4: Everything configured but still not working
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+NUCLEAR OPTION - Full Reset:
+
+1. Exit Play Mode
+2. Select Porta3
+3. DoorAnimation component:
+   - Is Locked: ✓ TRUE
+   - Player: Drag PlayerObj
+   - Interaction Point: Drag DistanceCheck3
+   - Interaction Distance: 10 (large for testing)
+4. Save Scene (Ctrl+S)
+5. Enter Play Mode
+6. Check Console for initialization messages
+7. Kill enemies → Press F at panel
+8. Walk to door (should open easily with 10m range)
+9. If works, reduce to 3m later
+
+════════════════════════════════════════════════════════════════
+
+📊 COMPLETE CONSOLE LOG (EXPECTED)
+════════════════════════════════════════════════════════════════
+
+[GAME START]
+Room 'RoomManager_Enemy_Room1' has 2 enemies.
+[Porta3] DoorAnimation initialized:
+  - Player: PlayerObj
+  - Interaction Point: DistanceCheck3
+  - Door Animator: Assigned
+  - Is Locked: True
+  - Interaction Distance: 3m
+[DoorPanel_ParentDoor3] Panel material assigned: ...
+[DoorPanel_ParentDoor3] Connected to RoomManager: ...
+[DoorPanel_ParentDoor3] Initial state: Locked
+
+[KILL ENEMIES]
+Room 'RoomManager_Enemy_Room1' cleared!
+[DoorPanel_ParentDoor3] OnRoomCleared called! Current state: Locked
+[DoorPanel_ParentDoor3] Panel color updated to RGBA(...) (State: Unlocked)
+
+[PRESS F AT PANEL]
+[DoorPanel_ParentDoor3] Door unlocked! DoorAnimation enabled and unlocked.
+[Porta3] Door unlocked! isLocked = False
+[Porta3] Player: PlayerObj, InteractionPoint: DistanceCheck3
+[DoorPanel_ParentDoor3] Door opened! Panel state: Opened
+[DoorPanel_ParentDoor3] Panel color updated to RGBA(...) (State: Opened)
+
+[APPROACH DOOR]
+[Porta3] Door opening for first time! Distance: 2.45m, isLocked: False
+
+════════════════════════════════════════════════════════════════
+
+🎯 KEY POINTS
+════════════════════════════════════════════════════════════════
+
+1. ⚠️  INTERACTION POINT IS CRITICAL!
+   Without it, the script exits Update() immediately
+   
+2. 🎨 USE VISUAL DEBUG
+   Select Porta3 during Play Mode to see live distance
+
+3. 📊 TRUST THE CONSOLE
+   Every step logs a message - missing messages = problem
+
+4. 🔴 RED SPHERE = LOCKED (won't open)
+   🟢 GREEN SPHERE = UNLOCKED (can open)
+
+5. 🚶 GET CLOSE!
+   Default is 3 meters - might need to be VERY close
+
+6. ⚙️  AUTO-DETECTION
+   Player and Animator auto-fill if empty
+   BUT Interaction Point MUST be manually assigned!
+
+════════════════════════════════════════════════════════════════
+
+✅ FINAL CHECKLIST BEFORE ASKING FOR HELP
+════════════════════════════════════════════════════════════════
+
+□ Porta3 → Interaction Point = DistanceCheck3 (assigned!)
+□ Porta3 → Player = PlayerObj (or auto-found)
+□ Porta3 → Is Locked = TRUE (initially)
+□ DoorPanel → Door Animation = Porta3 (assigned!)
+□ DoorPanel → Room Manager = RoomManager_Enemy_Room1
+□ Console shows initialization messages
+□ Console shows unlock messages after pressing F
+□ During Play Mode, selected Porta3 shows green sphere
+□ Distance shown in Scene view is < 3.0m when standing at door
+□ No errors in Console
+
+════════════════════════════════════════════════════════════════
+
+IF ALL CHECKED AND STILL NOT WORKING:
+
+Copy ALL Console messages and the current configuration:
+- Porta3 → DoorAnimation values
+- What distance shows when standing at door
+- Whether sphere is red or green
+
+════════════════════════════════════════════════════════════════
