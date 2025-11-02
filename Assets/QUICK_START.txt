@@ -1,0 +1,117 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                    LEADERBOARD - QUICK START GUIDE                         ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+NEW FEATURES:
+=============
+✓ Top 3 completion times tracked (Gold, Silver, Bronze)
+✓ Times saved between game sessions
+✓ Special medal messages for new records
+✓ Visual leaderboard on Clear Screen
+
+
+5-MINUTE SETUP:
+===============
+
+1. ADD LEADERBOARD MANAGER
+   □ Create empty GameObject named "LeaderboardManager"
+   □ Add LeaderboardManager script to it
+
+2. CREATE UI TEXTS (in ClearScreenPanel)
+   □ Create TextMeshPro: "GoldTimeText" (gold color)
+   □ Create TextMeshPro: "SilverTimeText" (silver color)
+   □ Create TextMeshPro: "BronzeTimeText" (bronze color)
+   
+3. ADD LEADERBOARD UI
+   □ Create empty GameObject: "LeaderboardUI"
+   □ Add LeaderboardUI script
+   □ Assign 3 text references in Inspector
+
+4. CONNECT TO CLEARSCREEN
+   □ Find ClearScreen script in scene
+   □ Assign LeaderboardUI to "Leaderboard UI" field
+
+5. TEST
+   □ Play and complete the level
+   □ Check leaderboard appears
+
+
+FILES CREATED:
+==============
+Scripts/Game/LeaderboardManager.cs    - Manages top 3 times
+Scripts/UI/LeaderboardUI.cs           - Displays leaderboard
+Scripts/UI/LeaderboardDebugger.cs     - Testing tool (optional)
+
+FILES MODIFIED:
+===============
+Scripts/UI/ClearScreen.cs             - Added leaderboard support
+
+
+WHAT CHANGED IN CLEARSCREEN:
+=============================
+New Inspector Fields:
+- Leaderboard UI (LeaderboardUI) - drag LeaderboardUI GameObject here
+- New Record Color (Color) - color for record messages (default: yellow)
+
+New Functionality:
+- Automatically adds times to leaderboard when level completes
+- Shows special messages: "🥇 NEW GOLD RECORD!", etc.
+- Updates leaderboard display after level complete
+
+
+SUGGESTED UI LAYOUT:
+====================
+Position the leaderboard texts below your FinalTimeText:
+
+CongratulationsText:  Y = 50
+FinalTimeText:        Y = 0
+GoldTimeText:         Y = -100   (🥇 --:--:--)
+SilverTimeText:       Y = -145   (🥈 --:--:--)
+BronzeTimeText:       Y = -190   (🥉 --:--:--)
+
+
+TESTING SHORTCUTS:
+==================
+Shift + L  = Clear leaderboard (needs LeaderboardDebugger)
+Shift + T  = Add test times (needs LeaderboardDebugger)
+
+
+TROUBLESHOOTING:
+================
+Leaderboard not showing?
+→ Check LeaderboardManager exists
+→ Check LeaderboardUI reference in ClearScreen
+→ Check 3 text references in LeaderboardUI
+
+Button not clickable?
+→ The button listener is added automatically in code
+→ Check RestartButton is assigned in ClearScreen Inspector
+→ Make sure button "Interactable" is enabled
+
+
+API REFERENCE:
+==============
+// Check if time made it to top 3
+bool isRecord = LeaderboardManager.Instance.TryAddTime(float time);
+
+// Get current top 3 times
+List<float> times = LeaderboardManager.Instance.GetTopTimes();
+
+// Get rank of specific time (1-3, or -1)
+int rank = LeaderboardManager.Instance.GetRank(float time);
+
+// Clear all saved times
+LeaderboardManager.Instance.ClearLeaderboard();
+
+// Update UI display
+leaderboardUI.UpdateLeaderboardDisplay();
+
+
+DETAILED DOCS:
+==============
+For complete setup instructions, see:
+→ LEADERBOARD_SETUP_GUIDE.txt
+
+
+════════════════════════════════════════════════════════════════════════════
+Enjoy your new leaderboard system! 🏆

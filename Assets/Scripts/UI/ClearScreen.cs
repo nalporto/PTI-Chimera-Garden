@@ -12,6 +12,7 @@ public class ClearScreen : MonoBehaviour
     [SerializeField] private TextMeshProUGUI finalTimeText;
     [SerializeField] private Button restartButton;
     [SerializeField] private Image fadeImage;
+    [SerializeField] private LeaderboardUI leaderboardUI;
     
     [Header("Animation Settings")]
     [SerializeField] private float fadeInDuration = 1.5f;
@@ -19,6 +20,7 @@ public class ClearScreen : MonoBehaviour
     [SerializeField] private Color fadeColor = Color.black;
     [SerializeField] private Color congratsColor = Color.white;
     [SerializeField] private Color timeColor = Color.white;
+    [SerializeField] private Color newRecordColor = Color.yellow;
     
     public static ClearScreen Instance { get; private set; }
     
@@ -110,7 +112,39 @@ public class ClearScreen : MonoBehaviour
         finalTimeText.color = new Color(timeColor.r, timeColor.g, timeColor.b, 0f);
         fadeImage.color = new Color(fadeColor.r, fadeColor.g, fadeColor.b, 0f);
         
-        congratulationsText.text = "LEVEL COMPLETE!";
+        bool isNewRecord = false;
+        int rank = -1;
+        
+        if (LeaderboardManager.Instance != null)
+        {
+            isNewRecord = LeaderboardManager.Instance.TryAddTime(completionTime);
+            rank = LeaderboardManager.Instance.GetRank(completionTime);
+            
+            if (rank == 1)
+            {
+                congratulationsText.text = "🥇 NEW GOLD RECORD!";
+                congratsColor = newRecordColor;
+            }
+            else if (rank == 2)
+            {
+                congratulationsText.text = "🥈 NEW SILVER RECORD!";
+                congratsColor = newRecordColor;
+            }
+            else if (rank == 3)
+            {
+                congratulationsText.text = "🥉 NEW BRONZE RECORD!";
+                congratsColor = newRecordColor;
+            }
+            else
+            {
+                congratulationsText.text = "LEVEL COMPLETE!";
+            }
+        }
+        else
+        {
+            congratulationsText.text = "LEVEL COMPLETE!";
+        }
+        
         finalTimeText.text = "Time: " + FormatTime(completionTime);
         Debug.Log($"Text set - Congratulations: '{congratulationsText.text}', Time: '{finalTimeText.text}'");
         
@@ -142,6 +176,11 @@ public class ClearScreen : MonoBehaviour
         fadeImage.color = new Color(fadeColor.r, fadeColor.g, fadeColor.b, 0.8f);
         congratulationsText.color = congratsColor;
         finalTimeText.color = timeColor;
+        
+        if (leaderboardUI != null)
+        {
+            leaderboardUI.UpdateLeaderboardDisplay();
+        }
         
         yield return new WaitForSecondsRealtime(1f);
         

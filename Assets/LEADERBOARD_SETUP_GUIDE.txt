@@ -1,0 +1,272 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║              LEADERBOARD SYSTEM - COMPLETE SETUP GUIDE                     ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+WHAT THIS ADDS:
+---------------
+✓ Top 3 completion times leaderboard (Gold 🥇, Silver 🥈, Bronze 🥉)
+✓ Special messages when you beat a record
+✓ Times saved between game sessions (using PlayerPrefs)
+✓ Visual display on the Clear Screen
+
+FILES CREATED:
+--------------
+✓ /Assets/Scripts/Game/LeaderboardManager.cs
+✓ /Assets/Scripts/UI/LeaderboardUI.cs
+✓ /Assets/Scripts/UI/LeaderboardDebugger.cs (optional testing tool)
+
+FILES MODIFIED:
+---------------
+✓ /Assets/Scripts/UI/ClearScreen.cs (added leaderboard integration)
+
+════════════════════════════════════════════════════════════════════════════
+
+STEP 1: ADD LEADERBOARD MANAGER TO SCENE
+-----------------------------------------
+1. In your Game scene, create an empty GameObject
+   - Right-click in Hierarchy → Create Empty
+   - Name it "LeaderboardManager"
+   
+2. Add the LeaderboardManager script
+   - Select the LeaderboardManager GameObject
+   - In Inspector, click "Add Component"
+   - Search for "LeaderboardManager" and add it
+
+3. Position it in your hierarchy (optional)
+   - You can place it anywhere, but I recommend near GameManager
+   - It will persist between scenes automatically
+
+════════════════════════════════════════════════════════════════════════════
+
+STEP 2: CREATE LEADERBOARD UI ELEMENTS
+---------------------------------------
+Navigate to: ---UI--- → Canvas → ClearScreenPanel
+
+1. Create Gold Time Text:
+   - Right-click on ClearScreenPanel → UI → Text - TextMeshPro
+   - Name it "GoldTimeText"
+   - In RectTransform:
+     * Position it below FinalTimeText (suggested Y: -100)
+     * Anchor: Middle Center
+     * Width: 400, Height: 40
+   - In TextMeshProUGUI:
+     * Text: "🥇 --:--:---"
+     * Font Size: 28
+     * Color: RGB(255, 214, 0) - Gold
+     * Alignment: Center
+     * Font: Use same font as other UI text
+
+2. Create Silver Time Text:
+   - Right-click on ClearScreenPanel → UI → Text - TextMeshPro
+   - Name it "SilverTimeText"
+   - In RectTransform:
+     * Position it below GoldTimeText (suggested Y: -145)
+     * Anchor: Middle Center
+     * Width: 400, Height: 40
+   - In TextMeshProUGUI:
+     * Text: "🥈 --:--:---"
+     * Font Size: 26
+     * Color: RGB(192, 192, 192) - Silver
+     * Alignment: Center
+
+3. Create Bronze Time Text:
+   - Right-click on ClearScreenPanel → UI → Text - TextMeshPro
+   - Name it "BronzeTimeText"
+   - In RectTransform:
+     * Position it below SilverTimeText (suggested Y: -190)
+     * Anchor: Middle Center
+     * Width: 400, Height: 40
+   - In TextMeshProUGUI:
+     * Text: "🥉 --:--:---"
+     * Font Size: 26
+     * Color: RGB(205, 127, 50) - Bronze
+     * Alignment: Center
+
+OPTIONAL - Create a title:
+   - Right-click on ClearScreenPanel → UI → Text - TextMeshPro
+   - Name it "LeaderboardTitle"
+   - Position above the times
+   - Text: "TOP 3 TIMES"
+   - Font Size: 24
+   - Color: White
+   - Alignment: Center
+
+════════════════════════════════════════════════════════════════════════════
+
+STEP 3: ADD LEADERBOARD UI SCRIPT
+----------------------------------
+1. Create a GameObject to hold the script:
+   - Right-click on ClearScreenPanel → Create Empty
+   - Name it "LeaderboardUI"
+   
+2. Add the LeaderboardUI script:
+   - Select the LeaderboardUI GameObject
+   - Click "Add Component"
+   - Search for "LeaderboardUI" and add it
+
+3. Assign the text references in Inspector:
+   - Drag GoldTimeText to the "Gold Time Text" field
+   - Drag SilverTimeText to the "Silver Time Text" field
+   - Drag BronzeTimeText to the "Bronze Time Text" field
+
+4. (Optional) Customize colors:
+   - Gold Color: RGB(255, 214, 0) - default
+   - Silver Color: RGB(192, 192, 192) - default
+   - Bronze Color: RGB(205, 127, 50) - default
+   - Empty Color: RGB(128, 128, 128) - shown when no time recorded
+
+════════════════════════════════════════════════════════════════════════════
+
+STEP 4: CONNECT CLEARSCREEN TO LEADERBOARD
+-------------------------------------------
+1. Find the ClearScreen script in your scene
+   - It should be attached to a GameObject (search for "ClearScreen" component)
+   
+2. In the Inspector, find the new fields added:
+   - "Leaderboard UI" field (under Clear Screen Components)
+   - "New Record Color" field (under Animation Settings)
+
+3. Assign the LeaderboardUI reference:
+   - Drag the LeaderboardUI GameObject from Step 3 to the "Leaderboard UI" field
+
+4. (Optional) Customize the New Record Color:
+   - Default is Yellow RGB(255, 255, 0)
+   - This color is used for the congratulations text when you beat a record
+
+════════════════════════════════════════════════════════════════════════════
+
+STEP 5: (OPTIONAL) ADD DEBUG TOOLS
+-----------------------------------
+If you want to test the leaderboard easily:
+
+1. Create a GameObject for debugging:
+   - Right-click in Hierarchy → Create Empty
+   - Name it "LeaderboardDebugger"
+
+2. Add the LeaderboardDebugger script:
+   - Select the GameObject
+   - Add Component → LeaderboardDebugger
+
+3. Use keyboard shortcuts during Play Mode:
+   - Shift + L = Clear leaderboard
+   - Shift + T = Add test times
+
+4. Or use the Inspector:
+   - Check "Clear Leaderboard On Start" to reset on scene load
+   - Modify "Test Time 1/2/3" to customize test values
+
+════════════════════════════════════════════════════════════════════════════
+
+STEP 6: TEST THE SYSTEM
+------------------------
+1. Enter Play Mode
+2. Complete the level
+3. You should see:
+   ✓ "LEVEL COMPLETE!" message (or medal message if it's a record)
+   ✓ Your completion time
+   ✓ The leaderboard showing your time in the appropriate slot
+   ✓ A clickable restart button
+
+4. Complete the level multiple times with different speeds
+5. Watch the leaderboard update with your best times
+6. Exit and re-enter Play Mode - times should persist
+
+════════════════════════════════════════════════════════════════════════════
+
+HOW IT WORKS:
+=============
+1. When you complete the level, GameClear.cs calls ClearScreen.ShowClearScreen(time)
+2. ClearScreen checks if the time is in the top 3:
+   - If yes: Adds it to the leaderboard
+   - Shows special message based on rank (🥇🥈🥉)
+3. LeaderboardUI updates to display the current top 3 times
+4. Times are saved to PlayerPrefs automatically
+5. On next game start, times are loaded from PlayerPrefs
+
+MEDAL MESSAGES:
+- 🥇 NEW GOLD RECORD! = Fastest time (rank 1)
+- 🥈 NEW SILVER RECORD! = 2nd fastest time (rank 2)
+- 🥉 NEW BRONZE RECORD! = 3rd fastest time (rank 3)
+- LEVEL COMPLETE! = Completed but not in top 3
+
+════════════════════════════════════════════════════════════════════════════
+
+CUSTOMIZATION:
+==============
+In LeaderboardUI Inspector:
+- Change medal emojis (goldPrefix, silverPrefix, bronzePrefix)
+- Change colors for each rank
+- Change empty text placeholder ("--:--:---")
+- Modify text format
+
+In ClearScreen Inspector:
+- New Record Color (shown when you beat a record)
+- Animation timings
+- Fade colors
+
+════════════════════════════════════════════════════════════════════════════
+
+TROUBLESHOOTING:
+================
+Q: Leaderboard not showing?
+A: 1. Check that LeaderboardManager exists in the scene
+   2. Verify LeaderboardUI reference is assigned in ClearScreen
+   3. Check that all 3 text references are assigned in LeaderboardUI
+   4. Look in Console for warnings/errors
+
+Q: Times not saving between sessions?
+A: 1. Check Console for PlayerPrefs errors
+   2. Verify LeaderboardManager.Instance is not null
+   3. Try Edit → Clear All PlayerPrefs and start fresh
+
+Q: Special messages not showing?
+A: 1. Complete the level again to add a time
+   2. Check that your new time is actually in top 3
+   3. Verify LeaderboardManager.Instance exists
+
+Q: Button still not clickable?
+A: 1. Check that RestartButton is assigned in ClearScreen Inspector
+   2. Make sure EventSystem exists in scene (---INPUT---/EventSystem)
+   3. Verify button "Interactable" is checked
+   4. Look for "RestartGame listener added to button!" in Console
+
+════════════════════════════════════════════════════════════════════════════
+
+RESET LEADERBOARD:
+==================
+Option 1 - Use Debug Tool:
+- Add LeaderboardDebugger to scene
+- Press Shift + L during Play Mode
+
+Option 2 - Manual:
+- Unity Menu → Edit → Clear All PlayerPrefs
+- WARNING: This clears ALL PlayerPrefs data!
+
+Option 3 - Code:
+LeaderboardManager.Instance.ClearLeaderboard();
+
+════════════════════════════════════════════════════════════════════════════
+
+FINAL HIERARCHY STRUCTURE:
+===========================
+---UI---
+└── Canvas
+    └── ClearScreenPanel
+        ├── CongratulationsText (existing)
+        ├── FinalTimeText (existing)
+        ├── RestartButton (existing)
+        ├── FadeImage (existing)
+        ├── GoldTimeText ← NEW
+        ├── SilverTimeText ← NEW
+        ├── BronzeTimeText ← NEW
+        └── LeaderboardUI (GameObject) ← NEW
+
+Scene Root
+└── LeaderboardManager ← NEW
+
+════════════════════════════════════════════════════════════════════════════
+
+That's it! Your leaderboard system is complete!
+The button should now be clickable and you'll have a working top 3 times system.
+
+For quick reference, see: QUICK_REFERENCE.txt

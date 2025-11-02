@@ -1,0 +1,219 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                    LEADERBOARD UI LAYOUT DIAGRAM                           ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+CLEAR SCREEN PANEL LAYOUT:
+==========================
+
+┌────────────────────────────────────────────────────────────────────────┐
+│                        ClearScreenPanel                                 │
+│                       (Full Screen Overlay)                             │
+│                                                                          │
+│                                                                          │
+│                                                                          │
+│                      🏆 NEW GOLD RECORD! 🏆                             │
+│                   (CongratulationsText - Yellow)                        │
+│                                                                          │
+│                        Time: 01:23.456                                  │
+│                     (FinalTimeText - White)                             │
+│                                                                          │
+│                     ────────────────────                                │
+│                                                                          │
+│                        TOP 3 TIMES                                      │
+│                     (Optional Title Text)                               │
+│                                                                          │
+│                      🥇 01:23.456                                       │
+│                    (GoldTimeText - Gold)                                │
+│                                                                          │
+│                      🥈 01:30.789                                       │
+│                   (SilverTimeText - Silver)                             │
+│                                                                          │
+│                      🥉 01:45.012                                       │
+│                   (BronzeTimeText - Bronze)                             │
+│                                                                          │
+│                                                                          │
+│                     ┌──────────────┐                                    │
+│                     │   RESTART    │                                    │
+│                     └──────────────┘                                    │
+│                    (RestartButton - existing)                           │
+│                                                                          │
+└────────────────────────────────────────────────────────────────────────┘
+
+
+HIERARCHY STRUCTURE:
+====================
+
+---UI---
+└── Canvas
+    └── ClearScreenPanel
+        ├── CongratulationsText      [Existing - Modified by code]
+        ├── FinalTimeText            [Existing]
+        ├── RestartButton            [Existing]
+        ├── FadeImage                [Existing]
+        │
+        ├── GoldTimeText            [NEW - Create this]
+        ├── SilverTimeText          [NEW - Create this]
+        ├── BronzeTimeText          [NEW - Create this]
+        │
+        └── LeaderboardUI (Empty GameObject)  [NEW - Create this]
+                └── LeaderboardUI Script      [Add this component]
+
+
+COMPONENT DETAILS:
+==================
+
+GoldTimeText (TextMeshProUGUI):
+--------------------------------
+Initial Text:    "🥇 --:--:---"
+Font Size:       28-32
+Color:          RGB(255, 214, 0) - Gold
+Alignment:      Center Middle
+Anchor:         Middle Center
+Position:       X: 0, Y: -100 (adjust as needed)
+Width:          400
+Height:         40
+
+
+SilverTimeText (TextMeshProUGUI):
+----------------------------------
+Initial Text:    "🥈 --:--:---"
+Font Size:       26-30
+Color:          RGB(192, 192, 192) - Silver
+Alignment:      Center Middle
+Anchor:         Middle Center
+Position:       X: 0, Y: -145
+Width:          400
+Height:         40
+
+
+BronzeTimeText (TextMeshProUGUI):
+----------------------------------
+Initial Text:    "🥉 --:--:---"
+Font Size:       26-30
+Color:          RGB(205, 127, 50) - Bronze
+Alignment:      Center Middle
+Anchor:         Middle Center
+Position:       X: 0, Y: -190
+Width:          400
+Height:         40
+
+
+LeaderboardUI (Empty GameObject):
+----------------------------------
+Purpose:        Holds the LeaderboardUI script
+Position:       Doesn't matter (it's just a container)
+Script Fields:  Assign the 3 TextMeshProUGUI components above
+
+
+ALTERNATIVE COMPACT LAYOUT:
+============================
+
+If you want a more compact design:
+
+┌────────────────────────────────────┐
+│      🏆 NEW GOLD RECORD! 🏆        │
+│      Time: 01:23.456               │
+│                                     │
+│  🥇 01:23.456  🥈 01:30.789        │
+│        🥉 01:45.012                │
+│                                     │
+│      ┌────────────┐                │
+│      │  RESTART   │                │
+│      └────────────┘                │
+└────────────────────────────────────┘
+
+For this layout, position texts horizontally instead.
+
+
+SCRIPT REFERENCES:
+==================
+
+ClearScreen Component:
+----------------------
+Find the GameObject with ClearScreen script and assign:
+✓ clearScreenPanel      (already assigned)
+✓ congratulationsText   (already assigned)
+✓ finalTimeText         (already assigned)
+✓ restartButton         (already assigned)
+✓ fadeImage             (already assigned)
+→ leaderboardUI         [NEW - Assign LeaderboardUI GameObject]
+→ newRecordColor        [NEW - Set to Yellow or customize]
+
+
+LeaderboardUI Component:
+-------------------------
+On the LeaderboardUI GameObject, assign:
+→ goldTimeText          [Assign GoldTimeText]
+→ silverTimeText        [Assign SilverTimeText]
+→ bronzeTimeText        [Assign BronzeTimeText]
+→ Colors                [Optional - Customize if needed]
+
+
+COLOR PALETTE SUGGESTIONS:
+===========================
+
+Default (Metallic):
+-------------------
+Gold:    #FFD600 (255, 214, 0)
+Silver:  #C0C0C0 (192, 192, 192)
+Bronze:  #CD7F32 (205, 127, 50)
+
+Alternative (Vibrant):
+----------------------
+Gold:    #FFD700 (255, 215, 0)   - More saturated gold
+Silver:  #B0B0B0 (176, 176, 176) - Slightly darker
+Bronze:  #CD853F (205, 133, 63)  - More orange
+
+Alternative (Pastel):
+---------------------
+Gold:    #FFEB99 (255, 235, 153)
+Silver:  #D3D3D3 (211, 211, 211)
+Bronze:  #E8C39E (232, 195, 158)
+
+
+FONT SUGGESTIONS:
+=================
+- Use the same font as your other UI elements for consistency
+- Recommended: Bold or SemiBold weight for the times
+- Add outline/shadow for better readability if using on dark backgrounds
+
+
+ANIMATION NOTES:
+================
+The leaderboard texts will:
+- Appear AFTER the congratulations and time texts fade in
+- Update when the UpdateLeaderboardDisplay() is called
+- Remain visible with the restart button
+
+To customize animation timing, adjust in ClearScreen:
+- fadeInDuration
+- textFadeDelay
+
+
+EMOJI COMPATIBILITY:
+====================
+The medal emojis (🥇🥈🥉) should work in most fonts.
+If they don't appear:
+- Use TextMeshPro fonts (better emoji support)
+- Or replace with text: "GOLD:", "SILVER:", "BRONZE:"
+- Edit goldPrefix/silverPrefix/bronzePrefix in LeaderboardUI script
+
+
+TESTING CHECKLIST:
+==================
+□ All 3 text objects created
+□ All 3 texts visible in Scene view
+□ LeaderboardUI GameObject created
+□ LeaderboardUI script added
+□ All text references assigned in LeaderboardUI
+□ LeaderboardUI reference assigned in ClearScreen
+□ Colors set correctly
+□ Font sizes readable
+□ Texts don't overlap
+□ Test in Play mode
+
+
+═══════════════════════════════════════════════════════════════════════════
+
+Copy this layout to match your game's visual style!
+Adjust positions, sizes, and colors to fit your design.
