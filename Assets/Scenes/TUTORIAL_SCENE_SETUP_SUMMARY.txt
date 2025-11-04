@@ -1,0 +1,171 @@
+════════════════════════════════════════════════════════════════
+     ✅ TUTORIAL & LEVEL 1 SCENE SEPARATION - QUICK START
+════════════════════════════════════════════════════════════════
+
+🎯 GOAL: Split your game into separate Tutorial and Level 1 scenes
+         with a selection menu
+
+📁 FILES CREATED:
+   ✓ MenuManager.cs - Manages menu navigation and scene loading
+   ✓ SceneSelectionValidator.cs - Validates your setup
+   ✓ SceneTransition.cs - Optional fade transitions
+   ✓ SCENE_SELECTION_SETUP_GUIDE.txt - Detailed step-by-step guide
+
+════════════════════════════════════════════════════════════════
+⚡ QUICK SETUP (5 STEPS)
+════════════════════════════════════════════════════════════════
+
+STEP 1: DUPLICATE & CLEAN SCENES
+────────────────────────────────────────────────────────────────
+1. In /Assets/Scenes/, duplicate Game.unity → rename to Tutorial.unity
+2. Open Tutorial.unity
+   - DELETE: /---MAP---/FirstLevel_Map and all level 1 enemies
+   - KEEP: /---PLAYER---, /---UI---, /---INPUT---, /TutorialMAP
+3. Open Game.unity
+   - DELETE: /TutorialMAP
+4. Save both scenes
+
+STEP 2: ADD SCENES TO BUILD
+────────────────────────────────────────────────────────────────
+1. File → Build Settings
+2. Add all scenes:
+   [0] MainMenu
+   [1] Tutorial
+   [2] Game
+
+STEP 3: CREATE SCENE SELECTION PANEL IN MAINMENU
+────────────────────────────────────────────────────────────────
+Open MainMenu.unity, then:
+
+1. Right-click Canvas → UI → Panel
+   Name: SceneSelectionPanel
+   Color: Dark (RGB 18, 25, 30)
+   Set INACTIVE initially
+
+2. Add 3 buttons as children:
+   
+   A) TutorialButton
+      Text: "START TUTORIAL"
+      Position: Center, Y: 80
+      
+   B) SkipButton
+      Text: "SKIP TO LEVEL 1"
+      Position: Center, Y: -40
+      
+   C) BackButton
+      Text: "BACK"
+      Position: Center, Y: -180
+
+STEP 4: SETUP MENUMANAGER
+────────────────────────────────────────────────────────────────
+1. Select MenuManager GameObject in MainMenu scene
+
+2. Drag references:
+   - Main Menu Panel: MainMenuPanel
+   - Config Panel: ConfigPanel
+   - Scene Selection Panel: SceneSelectionPanel (NEW)
+   
+3. Scene names:
+   - Tutorial Scene Name: "Tutorial"
+   - Game Scene Name: "Game"
+
+STEP 5: CONNECT BUTTON EVENTS
+────────────────────────────────────────────────────────────────
+For each button, in the Button component's "On Click ()":
+
+PlayButton → MenuManager.OnPlayButtonClicked()
+TutorialButton → MenuManager.OnStartTutorialClicked()
+SkipButton → MenuManager.OnSkipToLevelClicked()
+BackButton → MenuManager.OnBackToMainMenuClicked()
+
+════════════════════════════════════════════════════════════════
+🧪 VALIDATION
+════════════════════════════════════════════════════════════════
+
+1. In MainMenu scene, add SceneSelectionValidator.cs to any object
+2. Right-click component → "Validate Scene Setup"
+3. Check Console for validation results
+
+════════════════════════════════════════════════════════════════
+📊 YOUR SCENE STRUCTURE
+════════════════════════════════════════════════════════════════
+
+TUTORIAL.UNITY:
+   /---PLAYER---           ✓ Player character & camera
+   /---POST-PROCESSING---  ✓ Visual effects
+   /---INPUT---            ✓ Input system
+   /---UI---               ✓ Game UI (health, etc)
+   /TutorialMAP            ✓ Tutorial map
+   /---IA---               (Empty - no enemies in tutorial)
+
+GAME.UNITY:
+   /---PLAYER---           ✓ Player character & camera
+   /---POST-PROCESSING---  ✓ Visual effects
+   /---INPUT---            ✓ Input system
+   /---UI---               ✓ Game UI
+   /---MAP---              ✓ First level map
+   /---IA---               ✓ All enemies for level 1
+   /---SAMPLE---           ✓ Environment assets
+
+════════════════════════════════════════════════════════════════
+🎮 PLAYER FLOW
+════════════════════════════════════════════════════════════════
+
+MainMenu Scene
+    │
+    ├─[PLAY]→ Scene Selection Panel
+    │              │
+    │              ├─[START TUTORIAL]→ Tutorial.unity
+    │              │
+    │              ├─[SKIP TO LEVEL 1]→ Game.unity
+    │              │
+    │              └─[BACK]→ Main Menu
+    │
+    ├─[CONFIG]→ Config Panel
+    │
+    └─[EXIT]→ Quit Game
+
+════════════════════════════════════════════════════════════════
+📝 ADVANTAGES OF THIS SETUP
+════════════════════════════════════════════════════════════════
+
+✓ Clean separation of concerns
+✓ Better memory management (only load what's needed)
+✓ Easier to test individual scenes
+✓ No complex visibility toggling
+✓ Players get clear choice
+✓ Easy to modify tutorial without affecting level 1
+✓ Simple to add more levels later
+
+════════════════════════════════════════════════════════════════
+🔧 TROUBLESHOOTING
+════════════════════════════════════════════════════════════════
+
+ISSUE: Scene not loading
+FIX: Check File → Build Settings - are all scenes added?
+
+ISSUE: Button not working
+FIX: Check Button component's On Click () event is connected
+
+ISSUE: Wrong scene loads
+FIX: Verify scene names in MenuManager match exactly
+
+ISSUE: Missing references
+FIX: Drag panel GameObjects into MenuManager inspector slots
+
+════════════════════════════════════════════════════════════════
+🚀 NEXT STEPS (OPTIONAL)
+════════════════════════════════════════════════════════════════
+
+1. Add tutorial-specific UI prompts in Tutorial scene
+2. Add a "Next Level" button at tutorial end → loads Game scene
+3. Add player progress tracking (PlayerPrefs)
+4. Add fade transition effects using SceneTransition.cs
+5. Create more level scenes following the same pattern
+
+════════════════════════════════════════════════════════════════
+
+Need detailed step-by-step? Check:
+→ SCENE_SELECTION_SETUP_GUIDE.txt
+
+═══════════════════════════════════════════════════════════════

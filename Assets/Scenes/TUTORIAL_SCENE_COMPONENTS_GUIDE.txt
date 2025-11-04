@@ -1,0 +1,297 @@
+════════════════════════════════════════════════════════════════
+          🎓 TUTORIAL SCENE - COMPONENTS SETUP GUIDE
+════════════════════════════════════════════════════════════════
+
+This guide shows you how to add tutorial functionality to your
+Tutorial.unity scene.
+
+════════════════════════════════════════════════════════════════
+PART 1: ADD TUTORIAL COMPLETION ZONE
+════════════════════════════════════════════════════════════════
+
+This zone triggers when the player completes the tutorial and
+automatically loads the first level.
+
+STEP 1: CREATE COMPLETION TRIGGER
+────────────────────────────────────────────────────────────────
+1. In Tutorial scene Hierarchy, right-click /---Tutorial_MAP---
+2. Create → Create Empty
+3. Name it: "TutorialCompletionZone"
+
+STEP 2: ADD COMPONENTS
+────────────────────────────────────────────────────────────────
+1. Select TutorialCompletionZone
+2. Add Component → Box Collider
+   - Is Trigger: ✓ checked
+   - Size: Adjust to cover the exit area (e.g., 5, 5, 5)
+   
+3. Add Component → TutorialCompletionZone script
+   - Next Scene Name: "Game"
+   - Auto Load Next Scene: ✓ checked
+   - Delay Before Load: 1.5
+   - Mark Tutorial Complete: ✓ checked
+
+STEP 3: POSITION THE ZONE
+────────────────────────────────────────────────────────────────
+1. In Scene View, move the zone to the END of your tutorial area
+2. You can see the green gizmo showing the trigger volume
+3. Make sure it's large enough for the player to walk through
+
+OPTIONAL: Add Completion Message
+────────────────────────────────────────────────────────────────
+1. In /---UI---/Canvas, create UI → Panel
+   Name: "TutorialCompletePanel"
+   
+2. Add child: UI → Text - TextMeshPro
+   Text: "TUTORIAL COMPLETE!"
+   Font Size: 60
+   
+3. Set panel INACTIVE initially
+
+4. Drag TutorialCompletePanel to TutorialCompletionZone's
+   "Completion Message" field
+
+════════════════════════════════════════════════════════════════
+PART 2: ADD TUTORIAL PROMPTS (OPTIONAL)
+════════════════════════════════════════════════════════════════
+
+Add interactive prompts to teach the player controls.
+
+STEP 1: CREATE TUTORIAL PROMPT UI
+────────────────────────────────────────────────────────────────
+1. In /---UI---/Canvas, create UI → Panel
+   Name: "TutorialPromptPanel"
+   
+2. Settings:
+   - Anchor: Bottom-Center
+   - Pos Y: 150
+   - Width: 800
+   - Height: 150
+   - Color: Semi-transparent dark (RGB 20, 20, 20, Alpha 200)
+
+3. Add CanvasGroup component to panel
+   - Alpha: 0 (starts invisible)
+
+4. Add child Text - TextMeshPro:
+   Name: "TutorialPromptText"
+   - Font Size: 36
+   - Alignment: Center
+   - Color: White
+
+STEP 2: CREATE PROMPT TRIGGERS
+────────────────────────────────────────────────────────────────
+
+Example: Movement Prompt
+
+1. In /---Tutorial_MAP---, create empty GameObject
+   Name: "Prompt_Movement"
+
+2. Add Box Collider
+   - Is Trigger: ✓ checked
+   - Size: Adjust to trigger when player enters area
+
+3. Add Component → TutorialPrompt
+   - Prompt Message: "Press W, A, S, D to move"
+   - Display Duration: 3
+   - Trigger Once: ✓ checked
+
+4. Drag references:
+   - Prompt Text: TutorialPromptText
+   - Prompt Canvas Group: TutorialPromptPanel's CanvasGroup
+
+5. Position the trigger at the start of your tutorial
+
+CREATE MORE PROMPTS:
+────────────────────────────────────────────────────────────────
+Duplicate "Prompt_Movement" and change:
+
+Prompt_Jump:
+   Message: "Press SPACE to jump"
+   
+Prompt_Grapple:
+   Message: "Right-click on grapple points"
+   
+Prompt_Weapon:
+   Message: "Press 1, 2, 3 to switch weapons"
+
+Position each prompt where you want to teach that mechanic.
+
+════════════════════════════════════════════════════════════════
+PART 3: ADD TUTORIAL MANAGER (ADVANCED)
+════════════════════════════════════════════════════════════════
+
+For sequential tutorial messages that appear automatically.
+
+STEP 1: CREATE TUTORIAL MANAGER
+────────────────────────────────────────────────────────────────
+1. In Hierarchy, create empty GameObject
+   Name: "TutorialManager"
+   
+2. Add Component → TutorialManager
+
+STEP 2: SETUP UI (if not using prompt panel from Part 2)
+────────────────────────────────────────────────────────────────
+1. Create the same TutorialPromptPanel as in Part 2
+2. Make sure it has CanvasGroup component
+
+STEP 3: CONFIGURE TUTORIAL STEPS
+────────────────────────────────────────────────────────────────
+1. Select TutorialManager
+2. In Inspector, set:
+   - Tutorial Text: TutorialPromptText
+   - Tutorial Canvas Group: TutorialPromptPanel's CanvasGroup
+   - Tutorial Panel: TutorialPromptPanel
+   - Auto Start: ✓ checked
+   - Delay Before Start: 2
+
+3. Add Tutorial Steps (click +):
+
+   Step 1:
+   ┌─────────────────────────────────────────────────────────┐
+   │ Step Name: Welcome
+   │ Message: Welcome to Chimera Garden Tutorial!
+   │ Display Duration: 3
+   │ Wait For Input: ☐
+   └─────────────────────────────────────────────────────────┘
+
+   Step 2:
+   ┌─────────────────────────────────────────────────────────┐
+   │ Step Name: Movement
+   │ Message: Use W, A, S, D to move around
+   │ Display Duration: 4
+   │ Wait For Input: ☐
+   └─────────────────────────────────────────────────────────┘
+
+   Step 3:
+   ┌─────────────────────────────────────────────────────────┐
+   │ Step Name: Jump
+   │ Message: Press SPACE to jump
+   │ Display Duration: 3
+   │ Wait For Input: ☐
+   └─────────────────────────────────────────────────────────┘
+
+   Step 4:
+   ┌─────────────────────────────────────────────────────────┐
+   │ Step Name: Objective
+   │ Message: Reach the exit to complete the tutorial!
+   │ Display Duration: 4
+   │ Wait For Input: ☐
+   └─────────────────────────────────────────────────────────┘
+
+════════════════════════════════════════════════════════════════
+PART 4: TESTING YOUR TUTORIAL
+════════════════════════════════════════════════════════════════
+
+STEP 1: VERIFY BUILD SETTINGS
+────────────────────────────────────────────────────────────────
+File → Build Settings
+Scenes should be:
+   [0] MainMenu
+   [1] Tutorial
+   [2] Game
+
+STEP 2: TEST THE FLOW
+────────────────────────────────────────────────────────────────
+1. Open MainMenu scene
+2. Press Play
+3. Click PLAY → Choose "START TUTORIAL"
+4. Tutorial scene should load
+5. Walk through tutorial
+6. Reach completion zone → Game scene loads
+
+STEP 3: TEST TUTORIAL SKIP
+────────────────────────────────────────────────────────────────
+1. After completing tutorial once, return to Main Menu
+2. Click PLAY
+3. It should automatically load Game scene (skipping selection)
+   This is because tutorial is marked as completed
+
+STEP 4: RESET TUTORIAL (for testing)
+────────────────────────────────────────────────────────────────
+Add this script to test tutorial repeatedly:
+
+1. Create empty GameObject in MainMenu
+2. Add Component → Scene Selection Validator
+3. Right-click component → "Validate Scene Setup"
+4. Or manually: PlayerPrefs → Delete All (in code)
+
+To reset tutorial completion:
+   TutorialCompletionZone.ResetTutorialCompletion();
+
+════════════════════════════════════════════════════════════════
+RECOMMENDED TUTORIAL LAYOUT
+════════════════════════════════════════════════════════════════
+
+Your tutorial should teach in this order:
+
+AREA 1: MOVEMENT (0-20%)
+────────────────────────────────────────────────────────────────
+✓ Prompt_Movement → "W, A, S, D to move"
+✓ Simple path to walk through
+
+AREA 2: JUMPING (20-40%)
+────────────────────────────────────────────────────────────────
+✓ Prompt_Jump → "SPACE to jump"
+✓ Small platforms to jump across
+
+AREA 3: COMBAT (40-60%)
+────────────────────────────────────────────────────────────────
+✓ Prompt_Weapon → "1, 2, 3 to switch weapons"
+✓ Prompt_Shoot → "Left-click to shoot"
+✓ Practice targets or weak enemies
+
+AREA 4: GRAPPLE (60-80%)
+────────────────────────────────────────────────────────────────
+✓ Prompt_Grapple → "Right-click on grapple points"
+✓ Grapple points to practice
+
+AREA 5: COMPLETION (80-100%)
+────────────────────────────────────────────────────────────────
+✓ Final message → "You're ready! Reach the exit!"
+✓ TutorialCompletionZone at the end
+
+════════════════════════════════════════════════════════════════
+TIPS & BEST PRACTICES
+════════════════════════════════════════════════════════════════
+
+✓ Keep tutorial short (2-3 minutes maximum)
+✓ Only teach essential mechanics
+✓ Let players practice each mechanic before moving on
+✓ Use visual indicators (arrows, glowing objects)
+✓ Make the completion zone obvious
+✓ Test with someone who hasn't played before
+
+════════════════════════════════════════════════════════════════
+TROUBLESHOOTING
+════════════════════════════════════════════════════════════════
+
+ISSUE: Completion zone doesn't trigger
+FIX: - Check Box Collider "Is Trigger" is checked
+     - Check player has "Player" tag
+     - Check zone is positioned correctly
+
+ISSUE: Tutorial prompts don't show
+FIX: - Check UI references are assigned
+     - Check CanvasGroup exists on panel
+     - Check prompt triggers are positioned correctly
+
+ISSUE: Scene doesn't load after completion
+FIX: - Check scene name matches exactly: "Game"
+     - Check Game scene is in Build Settings
+     - Check Auto Load Next Scene is enabled
+
+ISSUE: Tutorial always shows even after completion
+FIX: - Check Mark Tutorial Complete is enabled
+     - Check MenuManager's Auto Skip is enabled
+
+════════════════════════════════════════════════════════════════
+✅ SETUP COMPLETE!
+════════════════════════════════════════════════════════════════
+
+Your tutorial scene now has:
+✓ Completion detection
+✓ Automatic progression to first level
+✓ Tutorial prompt system
+✓ Player progress tracking
+
+Have fun teaching your players!

@@ -1,0 +1,73 @@
+════════════════════════════════════════════════════════════════
+                   🎯 QUICK REFERENCE CARD 🎯
+════════════════════════════════════════════════════════════════
+
+YOUR SCENES:
+────────────────────────────────────────────────────────────────
+MainMenu.unity  → Menu with scene selection
+Tutorial.unity  → Tutorial level (in progress)
+Game.unity      → First level
+
+SCENE FLOW:
+────────────────────────────────────────────────────────────────
+MainMenu → [PLAY] → Scene Selection → Tutorial OR Game
+Tutorial → [Complete] → Game
+Any Scene → [ESC] → Pause → Return to MainMenu
+
+KEY SCRIPTS:
+────────────────────────────────────────────────────────────────
+MenuManager.cs               → Main menu logic
+TutorialCompletionZone.cs    → Tutorial exit trigger
+TutorialPrompt.cs            → Show tutorial messages
+ReturnToMenuButton.cs        → Pause/return to menu
+
+EDITOR TOOLS:
+────────────────────────────────────────────────────────────────
+Tools → Tutorial Setup Helper
+  → Check build settings
+  → Reset tutorial completion
+  → Quick scene navigation
+
+SETUP GUIDES:
+────────────────────────────────────────────────────────────────
+📄 TUTORIAL_SYSTEM_COMPLETE_OVERVIEW.txt
+   → Full system overview (START HERE!)
+
+📄 SCENE_SELECTION_SETUP_GUIDE.txt
+   → How to create the UI
+
+📄 TUTORIAL_SCENE_COMPONENTS_GUIDE.txt
+   → How to add tutorial zones
+
+📄 TUTORIAL_SCENE_SETUP_SUMMARY.txt
+   → Quick 5-step setup
+
+NEXT STEPS:
+────────────────────────────────────────────────────────────────
+1. ✓ Tutorial scene created
+2. □ Setup MainMenu UI scene selection panel
+3. □ Add TutorialCompletionZone to tutorial
+4. □ Add tutorial prompts
+5. □ Test the complete flow
+
+TESTING:
+────────────────────────────────────────────────────────────────
+1. Tools → Tutorial Setup Helper
+2. Click "Reset Tutorial Completion"
+3. Play MainMenu scene
+4. Test flow: Menu → Tutorial → Game
+
+COMMON ISSUES:
+────────────────────────────────────────────────────────────────
+Scene won't load?
+  → File → Build Settings → Add all scenes
+
+Tutorial auto-skips?
+  → Tools → Tutorial Setup Helper → Reset
+
+Completion zone not working?
+  → Check Player tag, Is Trigger enabled
+
+════════════════════════════════════════════════════════════════
+Read TUTORIAL_SYSTEM_COMPLETE_OVERVIEW.txt for full details!
+════════════════════════════════════════════════════════════════
