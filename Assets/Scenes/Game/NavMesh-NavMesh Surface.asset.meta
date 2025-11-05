@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: 235efbb144d621544b234c75339b1329
+=======
+guid: bd328d836c9a0374ebbaf91843fa5701
+>>>>>>> parent of 8f8f07a (New Tutorial Scene)
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 23800000
